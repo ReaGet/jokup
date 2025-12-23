@@ -4,25 +4,42 @@ import { useEffect, useState } from 'react'
 
 export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswers, onVote, playerId, timer, timerExpired }) {
   const [voted, setVoted] = useState(false)
-  const [selectedVotes, setSelectedVotes] = useState([])
+  const [rankings, setRankings] = useState({}) // { answerIndex: place (1, 2, or 3) }
   const [timeRemaining, setTimeRemaining] = useState(timer || 30)
+  const votersCount = currentMatchUp?.votersCount || 0
+  const totalPlayers = currentMatchUp?.totalPlayers || 0
+  // Determine required selections: 2 for 3 players, 3 for more players
+  const requiredSelections = totalPlayers === 3 ? 2 : 3
 
   useEffect(() => {
     // Reset voting state whenever a new match-up or phase arrives
     // Reset when promptId changes (new match-up) or when switching between regular/Last Lash voting
     setVoted(false)
-    setSelectedVotes([])
+    setRankings({})
     setTimeRemaining(timer || 30)
-  }, [currentMatchUp?.promptId, isLastLash, timer])
+  }, [currentMatchUp?.promptId, isLastLash])
 
   useEffect(() => {
-    if (timer !== undefined) {
+    // Only update timer if we haven't started voting yet
+    // This prevents resetting the timer mid-voting
+    if (timer !== undefined && !voted && Object.keys(rankings).length === 0) {
       setTimeRemaining(timer)
     }
-  }, [timer])
+  }, [timer, voted, rankings])
 
   useEffect(() => {
-    if (timeRemaining <= 0 || timerExpired) return
+    if (timeRemaining <= 0 || timerExpired) {
+      // If timer expired and user hasn't voted, submit whatever they selected
+      if (!voted && isLastLash && Object.keys(rankings).length > 0) {
+        const rankingsArray = Object.entries(rankings).map(([idx, place]) => ({
+          answerIndex: parseInt(idx),
+          place: place
+        }))
+        onVote(rankingsArray)
+        setVoted(true)
+      }
+      return
+    }
 
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
@@ -34,7 +51,7 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timeRemaining, timerExpired])
+  }, [timeRemaining, timerExpired, voted, isLastLash, rankings, onVote])
 
   // Check if player is author (can't vote on own match-up)
   const isAuthor = currentMatchUp && currentMatchUp.players && currentMatchUp.players.includes(playerId)
@@ -47,25 +64,40 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
 
   const handleLastLashVote = (answerIndex) => {
     if (voted || timeRemaining <= 0 || timerExpired) return
-    if (selectedVotes.includes(answerIndex)) {
-      // Deselect
-      setSelectedVotes(selectedVotes.filter(i => i !== answerIndex))
-    } else if (selectedVotes.length < 3) {
-      // Select (max 3 votes)
-      setSelectedVotes([...selectedVotes, answerIndex])
+    
+    // If already ranked, don't allow re-selection
+    if (rankings[answerIndex]) return
+    
+    // Get current number of selected answers
+    const currentSelections = Object.keys(rankings).length
+    const nextPlace = currentSelections + 1
+    
+    // Assign place sequentially: 1st click = 1st place, 2nd click = 2nd place, etc.
+    const newRankings = { ...rankings, [answerIndex]: nextPlace }
+    setRankings(newRankings)
+    
+    // If this is the last required selection, automatically submit the vote
+    if (nextPlace === requiredSelections) {
+      // Create rankings array: [{ answerIndex: 0, place: 1 }, ...]
+      const rankingsArray = Object.entries(newRankings).map(([idx, place]) => ({
+        answerIndex: parseInt(idx),
+        place: place
+      }))
+      
+      // Send rankings to server
+      onVote(rankingsArray)
+      setVoted(true)
     }
-  }
-
-  const submitLastLashVotes = () => {
-    if (selectedVotes.length === 0 || timeRemaining <= 0 || timerExpired) return
-    // Send indices, server will handle player ID mapping
-    onVote(selectedVotes)
-    setVoted(true)
   }
   
   const isTimerExpired = timeRemaining <= 0 || timerExpired
 
   if (isLastLash) {
+    // Filter out own answer
+    const filteredAnswers = lastLashAnswers.filter((answer, index) => answer.playerId !== playerId)
+    const selectedCount = Object.keys(rankings).length
+    const placeLabels = { 1: '🥇 1st', 2: '🥈 2nd', 3: '🥉 3rd' }
+    
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
         <div className="w-full max-w-2xl space-y-6">
@@ -80,32 +112,55 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
           <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-purple-500 text-center">
             <h2 className="text-2xl font-bold mb-4">The Last Lash</h2>
             <p className="text-lg text-gray-300">{currentMatchUp?.prompt || 'Vote for your favorites!'}</p>
-            <p className="text-sm text-gray-400 mt-2">Select up to 3 answers</p>
+            <p className="text-sm text-gray-400 mt-2">
+              Click on your top {requiredSelections} answer{requiredSelections > 1 ? 's' : ''}: 1st click = 1st place{requiredSelections > 1 ? `, 2nd click = 2nd place${requiredSelections > 2 ? ', 3rd click = 3rd place' : ''}` : ''}
+            </p>
+            {selectedCount > 0 && (
+              <p className="text-xs text-yellow-400 mt-2">
+                Selected: {selectedCount} of {requiredSelections}
+              </p>
+            )}
+            {totalPlayers > 0 && (
+              <p className="text-xs text-gray-500 mt-1">
+                {votersCount} of {totalPlayers} players voted
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
-            {lastLashAnswers.map((answer, index) => {
-              const isSelected = selectedVotes.includes(index)
-              const isOwnAnswer = answer.playerId === playerId
+            {filteredAnswers.map((answer, originalIndex) => {
+              // Find the original index in the full array
+              const answerIndex = lastLashAnswers.findIndex(a => 
+                a.playerId === answer.playerId && a.answer === answer.answer
+              )
+              const place = rankings[answerIndex]
+              const isSelected = place !== undefined
+              
               return (
-                <button
-                  key={index}
-                  onClick={() => !isOwnAnswer && handleLastLashVote(index)}
-                  disabled={isOwnAnswer || voted || isTimerExpired}
-                  className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
-                    isOwnAnswer || isTimerExpired
-                      ? 'bg-gray-700/50 border-gray-600 text-gray-500 cursor-not-allowed'
-                      : isSelected
-                      ? 'bg-yellow-500/30 border-yellow-400 transform scale-105'
-                      : 'bg-black/40 border-purple-500 hover:border-yellow-400'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg">{answer.answer}</span>
-                    {isSelected && <span className="text-yellow-400">✓</span>}
-                    {isOwnAnswer && <span className="text-xs text-gray-500">(Your answer)</span>}
-                  </div>
-                </button>
+                <div key={answerIndex} className="relative">
+                  <button
+                    onClick={() => !voted && !isTimerExpired && handleLastLashVote(answerIndex)}
+                    disabled={voted || isTimerExpired || isSelected}
+                    className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                      isTimerExpired || voted
+                        ? 'bg-gray-700/50 border-gray-600 text-gray-500 cursor-not-allowed'
+                        : isSelected
+                        ? place === 1
+                          ? 'bg-yellow-500/40 border-yellow-400'
+                          : place === 2
+                          ? 'bg-gray-400/40 border-gray-300'
+                          : 'bg-orange-600/40 border-orange-500'
+                        : 'bg-black/40 border-purple-500 hover:border-yellow-400 hover:scale-105'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg flex-1">{answer.answer}</span>
+                      {isSelected && (
+                        <span className="text-xl font-bold ml-2">{placeLabels[place]}</span>
+                      )}
+                    </div>
+                  </button>
+                </div>
               )
             })}
           </div>
@@ -113,22 +168,32 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
           {isTimerExpired ? (
             <div className="w-full bg-red-500/20 border-2 border-red-500 rounded-lg p-4 text-center text-red-300">
               Time's up! Voting has ended.
+              {selectedCount > 0 && !voted && (
+                <p className="text-xs mt-2">Your {selectedCount} selected answer{selectedCount > 1 ? 's' : ''} {selectedCount === 1 ? 'has' : 'have'} been submitted.</p>
+              )}
             </div>
-          ) : !voted ? (
-            <button
-              onClick={submitLastLashVotes}
-              disabled={selectedVotes.length === 0}
-              className={`w-full py-4 rounded-lg text-xl font-bold transition-all ${
-                selectedVotes.length > 0
-                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'
-                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              Submit Votes ({selectedVotes.length}/3)
-            </button>
-          ) : (
-            <div className="bg-green-500/20 border-2 border-green-500 rounded-lg p-4 text-center text-green-300">
-              Votes submitted!
+          ) : voted ? (
+            <div className="space-y-2">
+              <div className="bg-green-500/20 border-2 border-green-500 rounded-lg p-4 text-center text-green-300">
+                Votes submitted! Waiting for other players...
+              </div>
+              {totalPlayers > 0 && (
+                <div className="bg-blue-500/20 border-2 border-blue-500 rounded-lg p-3 text-center">
+                  <div className="text-sm text-blue-300">
+                    {votersCount} of {totalPlayers} players voted
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                    <div 
+                      className="bg-blue-500 h-2 rounded-full transition-all"
+                      style={{ width: `${(votersCount / totalPlayers) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : selectedCount < requiredSelections && (
+            <div className="w-full bg-blue-500/20 border-2 border-blue-500 rounded-lg p-4 text-center text-blue-300">
+              Select {requiredSelections - selectedCount} more answer{requiredSelections - selectedCount > 1 ? 's' : ''} to complete your vote
             </div>
           )}
         </div>

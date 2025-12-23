@@ -32,7 +32,42 @@ export default function ResultReveal({ results, isLastLash }) {
   }, [results, isLastLash])
 
   if (isLastLash) {
+    const [showFirstPlace, setShowFirstPlace] = useState(false)
+    const [showSecondPlace, setShowSecondPlace] = useState(false)
+    const [showThirdPlace, setShowThirdPlace] = useState(false)
+    const [showAllScores, setShowAllScores] = useState(false)
+    
     const entries = results?.entries || []
+    
+    useEffect(() => {
+      // Show all answers first
+      const timer1 = setTimeout(() => {
+        setShowFirstPlace(true)
+      }, 500)
+      
+      // Show second place after delay
+      const timer2 = setTimeout(() => {
+        setShowSecondPlace(true)
+      }, 2000)
+      
+      // Show third place after delay
+      const timer3 = setTimeout(() => {
+        setShowThirdPlace(true)
+      }, 3500)
+      
+      // Show all scores after all places are shown
+      const timer4 = setTimeout(() => {
+        setShowAllScores(true)
+      }, 5000)
+      
+      return () => {
+        clearTimeout(timer1)
+        clearTimeout(timer2)
+        clearTimeout(timer3)
+        clearTimeout(timer4)
+      }
+    }, [])
+    
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-8">
         <div className="max-w-5xl w-full space-y-6">
@@ -41,16 +76,46 @@ export default function ResultReveal({ results, isLastLash }) {
             <p className="text-xl text-gray-300">{results?.prompt}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {entries.map((entry, idx) => (
-              <div
-                key={entry.playerId || idx}
-                className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-blue-500"
-              >
-                <div className="text-lg text-gray-400 mb-2">{entry.playerName}</div>
-                <div className="text-xl text-gray-200 min-h-[80px]">{entry.answer}</div>
-                <div className="text-3xl font-bold text-yellow-400 mt-3">{entry.votes || 0} votes</div>
-              </div>
-            ))}
+            {entries.map((entry, idx) => {
+              const placeCounts = entry.placeCounts || { first: 0, second: 0, third: 0 }
+              const totalPoints = entry.totalPoints || 0
+              
+              return (
+                <div
+                  key={entry.playerId || idx}
+                  className={`bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 transition-all duration-500 ${
+                    showAllScores && totalPoints > 0 ? 'border-yellow-500' : 'border-blue-500'
+                  }`}
+                >
+                  <div className="text-lg text-gray-400 mb-2">{entry.playerName}</div>
+                  <div className="text-xl text-gray-200 min-h-[80px]">{entry.answer}</div>
+                  
+                  {/* Show places progressively */}
+                  <div className="mt-3 space-y-2">
+                    {showFirstPlace && placeCounts.first > 0 && (
+                      <div className="text-2xl font-bold text-yellow-400 animate-fade-in">
+                        🥇 {placeCounts.first} first place{placeCounts.first > 1 ? 's' : ''}
+                      </div>
+                    )}
+                    {showSecondPlace && placeCounts.second > 0 && (
+                      <div className="text-2xl font-bold text-gray-300 animate-fade-in">
+                        🥈 {placeCounts.second} second place{placeCounts.second > 1 ? 's' : ''}
+                      </div>
+                    )}
+                    {showThirdPlace && placeCounts.third > 0 && (
+                      <div className="text-2xl font-bold text-orange-400 animate-fade-in">
+                        🥉 {placeCounts.third} third place{placeCounts.third > 1 ? 's' : ''}
+                      </div>
+                    )}
+                    {showAllScores && (
+                      <div className="text-3xl font-bold text-yellow-400 mt-2 animate-fade-in">
+                        {totalPoints} points
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>

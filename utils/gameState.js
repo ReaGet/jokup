@@ -27,6 +27,9 @@ const SCORING = {
   JOKUP_BONUS: 500, // Unanimous win bonus
   ROUND_2_MULTIPLIER: 1.5,
   ROUND_3_MULTIPLIER: 2,
+  LAST_LASH_FIRST_PLACE: 300,
+  LAST_LASH_SECOND_PLACE: 200,
+  LAST_LASH_THIRD_PLACE: 100,
 };
 
 module.exports = {

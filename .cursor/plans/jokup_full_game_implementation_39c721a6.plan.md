@@ -50,15 +50,11 @@ todos:
 
 ## Architecture Overview
 
-**Backend**: Node.js + Express + Socket.io for real-time game state management
-
-**Frontend**: Next.js (latest) + Tailwind CSS with two views (main screen + player phones)
-
-**Real-time**: WebSocket connections for synchronized gameplay
+**Backend**: Node.js + Express + Socket.io for real-time game state management**Frontend**: Next.js (latest) + Tailwind CSS with two views (main screen + player phones)**Real-time**: WebSocket connections for synchronized gameplay
 
 ## File Structure
 
-```
+```javascript
 jokup/
 ├── server/
 │   ├── index.js              # Express + Socket.io server
@@ -98,6 +94,8 @@ jokup/
 └── README.md
 ```
 
+
+
 ## Implementation Details
 
 ### 1. Backend - Server Setup (`server/index.js`)
@@ -120,17 +118,17 @@ jokup/
 
 - Game state machine: `LOBBY → INTRO → ANSWERING → VOTING → REVEAL → SCOREBOARD → (repeat rounds) → FINAL_WINNER`
 - Prompt assignment logic:
-  - Round 1 & 2: Each player gets 2 prompts
-  - Each prompt shared with exactly 1 other player (create match-ups)
-  - Algorithm ensures all players get 2 prompts and all prompts have 2 players
-  - Round 3: All players get same single prompt (Last Lash)
+- Round 1 & 2: Each player gets 2 prompts
+- Each prompt shared with exactly 1 other player (create match-ups)
+- Algorithm ensures all players get 2 prompts and all prompts have 2 players
+- Round 3: All players get same single prompt (Last Lash)
 - Answer collection and storage per player/prompt
 - Match-up generation for voting phase
 - Voting system with eligibility checks (authors can't vote on own match-up)
 - Score calculation:
-  - Base: 100 points per vote
-  - JokUp bonus: 500 points for unanimous win
-  - Round multipliers: Round 2 (x1.5), Round 3 (x2)
+- Base: 100 points per vote
+- JokUp bonus: 500 points for unanimous win
+- Round multipliers: Round 2 (x1.5), Round 3 (x2)
 - Timer management (70-90s for Rounds 1-2, 30-45s for Round 3)
 - Handle partial submissions (player submits 1 of 2 prompts)
 
@@ -269,4 +267,3 @@ jokup/
 - Test timer expiration handling
 - Test disconnection/reconnection scenarios
 - Test partial answer submissions
-- Test Last Lash round (all players same prompt, multiple votes)

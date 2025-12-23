@@ -137,7 +137,11 @@ export default function PlayerScreen() {
       } else if (state.gameState === 'VOTING') {
         if (state.isLastLash) {
           setIsLastLash(true)
-          setCurrentMatchUp({ prompt: state.prompt })
+          setCurrentMatchUp({ 
+            prompt: state.prompt,
+            votersCount: state.votersCount || 0,
+            totalPlayers: state.totalPlayers || 0,
+          })
           setLastLashAnswers(state.lastLashAnswers || [])
         } else {
           setIsLastLash(false)
@@ -230,14 +234,23 @@ export default function PlayerScreen() {
       }
     })
 
-    socket.on('lastlash-voting-started', ({ prompt, answers, timer: t }) => {
-      setCurrentMatchUp({ prompt })
+    socket.on('lastlash-voting-started', ({ prompt, answers, timer: t, votersCount: vc, totalPlayers: tp }) => {
+      setCurrentMatchUp({ prompt, votersCount: vc, totalPlayers: tp })
       setLastLashAnswers(answers) // Answers already have playerId
       setIsLastLash(true)
       setGameState('VOTING')
       if (t !== undefined) {
         setVotingTimer(t)
       }
+    })
+
+    socket.on('lastlash-voting-status', ({ votersCount: vc, totalPlayers: tp, hasVoted }) => {
+      // Update voting status
+      setCurrentMatchUp(prev => ({
+        ...prev,
+        votersCount: vc,
+        totalPlayers: tp,
+      }))
     })
 
     socket.on('vote-confirmed', ({ matchUpId, vote }) => {
@@ -293,6 +306,7 @@ export default function PlayerScreen() {
       socket.off('answer-submitted')
       socket.off('voting-started')
       socket.off('lastlash-voting-started')
+      socket.off('lastlash-voting-status')
       socket.off('vote-confirmed')
       socket.off('results-revealed')
       socket.off('lastlash-results-revealed')

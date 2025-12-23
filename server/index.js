@@ -111,6 +111,8 @@ io.on('connection', (socket) => {
                 timerRemaining = Math.max(0, Math.floor(gameData.votingDuration / 1000) - elapsed);
               }
               gameState.votingTimer = timerRemaining;
+              gameState.votersCount = gameData.lastLashVoters?.size || 0;
+              gameState.totalPlayers = room.players.length;
             } else {
               // Regular match-up voting
               gameState.currentMatchUp = gameData.currentMatchUp;
@@ -263,6 +265,8 @@ io.on('connection', (socket) => {
             timerRemaining = Math.max(0, Math.floor(gameData.votingDuration / 1000) - elapsed);
           }
           gameState.votingTimer = timerRemaining;
+          gameState.votersCount = gameData.lastLashVoters?.size || 0;
+          gameState.totalPlayers = room.players.length;
         } else {
           // Regular match-up voting
           gameState.currentMatchUp = gameData.currentMatchUp;
@@ -412,15 +416,21 @@ io.on('connection', (socket) => {
 
     // Handle Last Lash voting differently
     if (gameData.round === ROUNDS.ROUND_3) {
-      // Check if voting timer has expired
-      if (gameData.votingExpired || (gameData.votingStartTime && Date.now() > gameData.votingStartTime + gameData.votingDuration)) {
+      // Check if voting timer has expired (allow 2 second grace period for network delays)
+      const gracePeriod = 2000; // 2 seconds
+      if (gameData.votingExpired || (gameData.votingStartTime && Date.now() > gameData.votingStartTime + gameData.votingDuration + gracePeriod)) {
         socket.emit('error', { message: 'Voting time has expired' });
         return;
       }
       
-      // vote is array of playerIds (indices) for Last Lash
-      const votedPlayerIds = Array.isArray(vote) ? vote : [vote];
-      handleLastLashVote(roomCode, player.id, votedPlayerIds);
+      // vote is array of rankings: [{ answerIndex: 0, place: 1 }, { answerIndex: 2, place: 2 }, ...]
+      // Can be 1, 2, or 3 rankings depending on number of players
+      if (!Array.isArray(vote) || vote.length === 0 || vote.length > 3) {
+        socket.emit('error', { message: 'Invalid vote format. Please select at least 1 answer with rankings.' });
+        return;
+      }
+      
+      handleLastLashVote(roomCode, player.id, vote);
       socket.emit('vote-confirmed', {});
       return;
     }
@@ -819,7 +829,7 @@ function startLastLashVoting(roomCode) {
   });
 
   gameData.lastLashAnswers = allAnswers;
-  gameData.lastLashVotes = {}; // playerId -> votes received
+  gameData.lastLashVotes = {}; // voterId -> { rankings: [{ answerIndex, place }] }
   gameData.lastLashVoters = new Set(); // Track who has voted
   
   // Start voting timer
@@ -844,11 +854,14 @@ function startLastLashVoting(roomCode) {
     round: gameData.round,
     isLastLash: true,
     timer: TIMERS.VOTING_TIMER,
+    votersCount: 0,
+    totalPlayers: room.players.length,
   });
 }
 
 // Handle Last Lash vote
-function handleLastLashVote(roomCode, voterId, votedPlayerIds) {
+// vote is array of rankings: [{ answerIndex: 0, place: 1 }, { answerIndex: 2, place: 2 }, { answerIndex: 1, place: 3 }]
+function handleLastLashVote(roomCode, voterId, vote) {
   const room = roomManager.getRoom(roomCode);
   if (!room) return;
 
@@ -865,34 +878,76 @@ function handleLastLashVote(roomCode, voterId, votedPlayerIds) {
     return;
   }
 
-  gameData.lastLashVoters.add(voterId);
-
-  // Each player gets 3 votes max, cannot vote for themselves
   const voter = room.players.find(p => p.id === voterId);
   if (!voter) return;
 
-  // votedPlayerIds are indices into lastLashAnswers array
-  votedPlayerIds.slice(0, 3).forEach(answerIndex => {
-    if (answerIndex >= 0 && answerIndex < gameData.lastLashAnswers.length) {
-      const answer = gameData.lastLashAnswers[answerIndex];
-      // Don't allow voting for own answer
-      if (answer.playerId !== voterId) {
-        gameData.lastLashVotes[answer.playerId] = (gameData.lastLashVotes[answer.playerId] || 0) + 1;
-      }
+  // Validate vote structure: should be array of rankings with answerIndex and place
+  // Can be 1, 2, or 3 rankings depending on number of players
+  if (!Array.isArray(vote) || vote.length === 0 || vote.length > 3) {
+    return;
+  }
+
+  // Validate each ranking has answerIndex and place
+  const validRankings = vote.filter(r => 
+    typeof r === 'object' && 
+    typeof r.answerIndex === 'number' && 
+    typeof r.place === 'number' &&
+    r.place >= 1 && r.place <= 3 &&
+    r.answerIndex >= 0 && r.answerIndex < gameData.lastLashAnswers.length
+  );
+
+  if (validRankings.length === 0) {
+    return;
+  }
+
+  // Check that places are sequential starting from 1 (1, or 1-2, or 1-2-3)
+  const places = validRankings.map(r => r.place).sort();
+  for (let i = 0; i < places.length; i++) {
+    if (places[i] !== i + 1) {
+      return; // Places must be sequential: 1, 2, 3...
     }
+  }
+
+  // Check that answer indices are unique and not own answer
+  const answerIndices = validRankings.map(r => r.answerIndex);
+  const uniqueIndices = new Set(answerIndices);
+  if (uniqueIndices.size !== validRankings.length) {
+    return; // Duplicate indices
+  }
+
+  // Check that voter is not voting for their own answer
+  const hasOwnAnswer = validRankings.some(r => {
+    const answer = gameData.lastLashAnswers[r.answerIndex];
+    return answer && answer.playerId === voterId;
+  });
+  if (hasOwnAnswer) {
+    return;
+  }
+
+  // Store vote with rankings
+  gameData.lastLashVotes[voterId] = {
+    rankings: validRankings,
+  };
+
+  gameData.lastLashVoters.add(voterId);
+
+  // Broadcast voting status update
+  const votersCount = gameData.lastLashVoters.size;
+  const totalPlayers = room.players.length;
+  
+  io.to(roomCode).emit('lastlash-voting-status', {
+    votersCount,
+    totalPlayers,
+    hasVoted: Array.from(gameData.lastLashVoters),
   });
 
-  // Update answer vote counts
-  gameData.lastLashAnswers.forEach(answer => {
-    answer.votes = gameData.lastLashVotes[answer.playerId] || 0;
-  });
-
-  // Broadcast updated vote counts (still anonymous)
-  io.to(roomCode).emit('lastlash-votes-updated', {
-    voteCounts: gameData.lastLashAnswers.map(a => ({ votes: a.votes })),
-  });
-
-  // Note: Timer will auto-reveal when expired, no need to check for all votes
+  // Check if all players have voted
+  if (votersCount >= totalPlayers) {
+    // All voted, reveal results immediately
+    gameData.votingExpired = true;
+    gameEngine.stopTimer(roomCode);
+    revealLastLashResults(roomCode);
+  }
 }
 
 // Reveal Last Lash results
@@ -905,18 +960,48 @@ function revealLastLashResults(roomCode) {
 
   const gameData = room.gameData;
   
-  // Calculate scores with multiplier
-  const multiplier = SCORING.ROUND_3_MULTIPLIER || 2; // Round 3 multiplier
-  gameData.lastLashAnswers.forEach(answer => {
-    const points = Math.round(answer.votes * 100 * multiplier);
+  // Initialize place counts for each answer
+  const placeCounts = {}; // answerIndex -> { first: 0, second: 0, third: 0 }
+  gameData.lastLashAnswers.forEach((answer, index) => {
+    placeCounts[index] = { first: 0, second: 0, third: 0 };
+  });
+
+  // Count places from all votes
+  Object.values(gameData.lastLashVotes || {}).forEach(vote => {
+    if (vote.rankings) {
+      vote.rankings.forEach(ranking => {
+        const { answerIndex, place } = ranking;
+        if (placeCounts[answerIndex]) {
+          if (place === 1) placeCounts[answerIndex].first++;
+          else if (place === 2) placeCounts[answerIndex].second++;
+          else if (place === 3) placeCounts[answerIndex].third++;
+        }
+      });
+    }
+  });
+
+  // Calculate scores with fixed points per place and multiplier
+  const multiplier = SCORING.ROUND_3_MULTIPLIER || 2;
+  gameData.lastLashAnswers.forEach((answer, index) => {
+    const counts = placeCounts[index] || { first: 0, second: 0, third: 0 };
+    const points = Math.round(
+      (counts.first * SCORING.LAST_LASH_FIRST_PLACE +
+       counts.second * SCORING.LAST_LASH_SECOND_PLACE +
+       counts.third * SCORING.LAST_LASH_THIRD_PLACE) * multiplier
+    );
+    
     const player = room.players.find(p => p.id === answer.playerId);
     if (player) {
       player.score += points;
     }
+    
+    // Store place counts for display
+    answer.placeCounts = counts;
+    answer.totalPoints = points;
   });
 
-  // Sort by votes
-  const sortedAnswers = [...gameData.lastLashAnswers].sort((a, b) => b.votes - a.votes);
+  // Sort by total points
+  const sortedAnswers = [...gameData.lastLashAnswers].sort((a, b) => b.totalPoints - a.totalPoints);
 
   roomManager.updateGameState(roomCode, GAME_STATES.REVEAL);
 
