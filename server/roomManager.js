@@ -16,7 +16,7 @@ class RoomManager {
     this.rooms = new Map(); // roomCode -> room data
   }
 
-  createRoom() {
+  createRoom(settings = {}) {
     let roomCode;
     do {
       roomCode = generateRoomCode();
@@ -29,6 +29,10 @@ class RoomManager {
       gameState: 'LOBBY',
       createdAt: Date.now(),
       gameData: null,
+      settings: {
+        language: settings.language || 'en',
+        volume: settings.volume !== undefined ? settings.volume : 50,
+      },
     };
 
     this.rooms.set(roomCode, room);
@@ -164,6 +168,20 @@ class RoomManager {
     room.gameState = newState;
     if (gameData !== null) {
       room.gameData = gameData;
+    }
+
+    return true;
+  }
+
+  updateRoomSettings(roomCode, settings) {
+    const room = this.getRoom(roomCode);
+    if (!room) return false;
+
+    if (settings.language !== undefined) {
+      room.settings.language = settings.language;
+    }
+    if (settings.volume !== undefined) {
+      room.settings.volume = settings.volume;
     }
 
     return true;

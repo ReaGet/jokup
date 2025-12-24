@@ -1,0 +1,380 @@
+{
+  "designSystem": {
+    "name": "Jokup Design System",
+    "version": "1.0.0",
+    "philosophy": "A modern, vibrant party game interface with neon aesthetics, dark theme, and playful energy. The design balances futuristic cyberpunk vibes with approachable, fun interactions.",
+    
+    "colorPalette": {
+      "primary": {
+        "neon": "#8b5cf6",
+        "neonSoft": "rgba(139, 92, 246, 0.6)",
+        "description": "Primary purple neon color - used for main accents, borders, and glow effects"
+      },
+      "secondary": {
+        "accent": "#22d3ee",
+        "description": "Cyan accent color - used for highlights, hover states, and gradient combinations"
+      },
+      "background": {
+        "main": "radial-gradient(circle at top, #1b0f3b, #0b0618 70%)",
+        "panel": "rgba(25, 15, 60, 0.75)",
+        "description": "Dark purple gradient background with semi-transparent panels using backdrop blur"
+      },
+      "text": {
+        "main": "#f9fafb",
+        "muted": "#c7d2fe",
+        "description": "High contrast white for primary text, soft purple-tinted white for secondary text"
+      },
+      "gradients": {
+        "primary": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+        "background": "radial-gradient(circle at top, #1b0f3b, #0b0618 70%)",
+        "description": "Diagonal gradients for buttons and interactive elements, radial for backgrounds"
+      },
+      "overlays": {
+        "subtle": "rgba(255, 255, 255, 0.04)",
+        "border": "rgba(139, 92, 246, 0.35)",
+        "description": "Very subtle white overlays for depth, semi-transparent borders for definition"
+      }
+    },
+
+    "typography": {
+      "fontFamily": {
+        "primary": "\"Inter\", system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        "fallback": "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        "description": "Modern, clean sans-serif with excellent readability"
+      },
+      "scale": {
+        "h1": {
+          "desktop": "64px",
+          "tablet": "48px",
+          "mobile": "38px",
+          "weight": 900,
+          "letterSpacing": "1px",
+          "usage": "Main brand title, hero headings"
+        },
+        "h2": {
+          "size": "30px",
+          "weight": 900,
+          "usage": "Primary action buttons, major section headers"
+        },
+        "h3": {
+          "size": "22px",
+          "weight": 600,
+          "usage": "Card titles, menu items"
+        },
+        "body": {
+          "large": "20px",
+          "lineHeight": 1.6,
+          "usage": "Main descriptive text, taglines"
+        },
+        "body": {
+          "medium": "18px",
+          "weight": 600,
+          "usage": "Menu item labels, secondary text"
+        },
+        "small": {
+          "size": "14px",
+          "usage": "Helper text, captions, metadata"
+        },
+        "tagline": {
+          "size": "18px",
+          "letterSpacing": "2px",
+          "textTransform": "uppercase",
+          "usage": "Brand taglines, section labels"
+        }
+      },
+      "weights": {
+        "normal": 400,
+        "medium": 600,
+        "bold": 900
+      }
+    },
+
+    "spacing": {
+      "scale": {
+        "xs": "20px",
+        "sm": "22px",
+        "md": "28px",
+        "lg": "32px",
+        "xl": "36px",
+        "2xl": "40px",
+        "3xl": "48px"
+      },
+      "padding": {
+        "container": "48px",
+        "containerMobile": "36px",
+        "containerSmall": "20px",
+        "button": "28px",
+        "buttonMobile": "20px",
+        "card": "22px",
+        "description": "Generous padding for breathing room, responsive scaling"
+      },
+      "gap": {
+        "tight": "20px",
+        "normal": "28px",
+        "loose": "32px",
+        "section": "48px",
+        "description": "Consistent gaps for grid layouts and flex containers"
+      }
+    },
+
+    "borderRadius": {
+      "small": "18px",
+      "large": "24px",
+      "xl": "28px",
+      "description": "Generous rounding for modern, friendly appearance. Large radius for main containers, medium for cards and buttons"
+    },
+
+    "shadows": {
+      "glow": {
+        "primary": "0 0 40px rgba(139, 92, 246, 0.35)",
+        "accent": "0 0 40px rgba(34, 211, 238, 0.45)",
+        "hover": "0 0 60px rgba(34, 211, 238, 0.7)",
+        "card": "0 0 25px rgba(34, 211, 238, 0.35)",
+        "logo": "0 0 40px rgba(139, 92, 246, 0.6)",
+        "description": "Neon glow effects - primary purple for general elements, cyan for interactive states"
+      },
+      "inset": {
+        "subtle": "inset 0 0 0 transparent",
+        "description": "Subtle inset shadows for depth when needed"
+      }
+    },
+
+    "effects": {
+      "backdropBlur": {
+        "value": "16px",
+        "usage": "Applied to panel backgrounds for glassmorphism effect"
+      },
+      "transitions": {
+        "fast": "0.12s ease",
+        "normal": "0.15s ease",
+        "properties": ["transform", "box-shadow", "border-color"],
+        "description": "Smooth, quick transitions for interactive elements"
+      },
+      "hover": {
+        "transform": "translateY(-2px) to translateY(-3px)",
+        "description": "Subtle lift effect on hover for buttons and cards"
+      }
+    },
+
+    "layout": {
+      "grid": {
+        "main": "1.2fr 1fr",
+        "mobile": "1fr",
+        "description": "Two-column layout for desktop (brand/actions), single column for mobile"
+      },
+      "maxWidth": {
+        "container": "1280px",
+        "content": "520px",
+        "description": "Centered container with max-width for readability"
+      },
+      "breakpoints": {
+        "tablet": "1000px",
+        "mobile": "520px",
+        "description": "Responsive breakpoints for layout adjustments"
+      }
+    },
+
+    "components": {
+      "logo": {
+        "size": {
+          "desktop": "96px",
+          "mobile": "72px"
+        },
+        "iconSize": {
+          "desktop": "44px",
+          "mobile": "32px"
+        },
+        "borderRadius": "24px",
+        "background": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+        "shadow": "0 0 40px rgba(139, 92, 246, 0.6)",
+        "description": "Gradient background with emoji icon, strong glow effect"
+      },
+      "button": {
+        "primary": {
+          "padding": "28px",
+          "fontSize": "30px",
+          "fontWeight": 900,
+          "borderRadius": "18px",
+          "background": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+          "shadow": "0 0 40px rgba(34, 211, 238, 0.45)",
+          "hover": {
+            "transform": "translateY(-3px)",
+            "shadow": "0 0 60px rgba(34, 211, 238, 0.7)"
+          },
+          "description": "Large, bold primary action button with gradient and strong glow"
+        },
+        "secondary": {
+          "padding": "22px",
+          "background": "rgba(255, 255, 255, 0.04)",
+          "border": "1px solid rgba(139, 92, 246, 0.35)",
+          "borderRadius": "18px",
+          "hover": {
+            "transform": "translateY(-2px)",
+            "borderColor": "#22d3ee",
+            "shadow": "0 0 25px rgba(34, 211, 238, 0.35)"
+          },
+          "description": "Subtle card-style buttons with border and glow on hover"
+        }
+      },
+      "card": {
+        "background": "rgba(255, 255, 255, 0.04)",
+        "border": "1px solid rgba(139, 92, 246, 0.35)",
+        "borderRadius": "18px",
+        "padding": "22px",
+        "hover": {
+          "transform": "translateY(-2px)",
+          "borderColor": "#22d3ee",
+          "shadow": "0 0 25px rgba(34, 211, 238, 0.35)"
+        },
+        "description": "Glassmorphic cards with subtle background, bordered, interactive hover states"
+      },
+      "panel": {
+        "background": "rgba(25, 15, 60, 0.75)",
+        "backdropFilter": "blur(16px)",
+        "borderRadius": "28px",
+        "padding": "48px",
+        "shadow": "0 0 40px rgba(139, 92, 246, 0.35)",
+        "description": "Main container panels with glassmorphism effect"
+      }
+    },
+
+    "designPrinciples": {
+      "visualHierarchy": {
+        "description": "Use size, weight, and color to create clear hierarchy. Largest elements are most important actions.",
+        "rules": [
+          "Primary actions use largest text (30px+) and boldest weight (900)",
+          "Secondary actions use medium text (18px) and medium weight (600)",
+          "Supporting text uses smaller sizes (14-20px) with muted colors"
+        ]
+      },
+      "neonAesthetics": {
+        "description": "Neon glow effects are signature to this design. Use strategically for emphasis and interactivity.",
+        "rules": [
+          "Primary glow: rgba(139, 92, 246, 0.35) for general elements",
+          "Accent glow: rgba(34, 211, 238, 0.45) for interactive states",
+          "Hover glow: Increase intensity to 0.7 for active states",
+          "Apply glow to: buttons, logo, main panels, hover states"
+        ]
+      },
+      "glassmorphism": {
+        "description": "Semi-transparent panels with backdrop blur create depth and modern aesthetic.",
+        "rules": [
+          "Panel backgrounds: rgba(25, 15, 60, 0.75) with backdrop-filter: blur(16px)",
+          "Card backgrounds: rgba(255, 255, 255, 0.04) for subtle depth",
+          "Always combine transparency with backdrop blur for proper effect"
+        ]
+      },
+      "gradientUsage": {
+        "description": "Gradients add energy and visual interest. Use for primary actions and brand elements.",
+        "rules": [
+          "Primary gradient (purple to cyan): buttons, logo, key interactive elements",
+          "Background gradient (radial): full page backgrounds",
+          "Gradients should always flow from purple (#8b5cf6) to cyan (#22d3ee) at 135deg"
+        ]
+      },
+      "interactivity": {
+        "description": "All interactive elements should provide clear feedback through hover states.",
+        "rules": [
+          "Hover: translateY(-2px to -3px) for lift effect",
+          "Hover: Change border color to accent cyan (#22d3ee)",
+          "Hover: Increase glow intensity",
+          "Transitions: 0.12s-0.15s ease for smooth feel"
+        ]
+      },
+      "spacing": {
+        "description": "Generous spacing creates breathing room and premium feel.",
+        "rules": [
+          "Container padding: 48px desktop, 36px tablet, 20px mobile",
+          "Section gaps: 48px for major sections, 28-32px for related content",
+          "Card padding: 22px minimum for comfortable content",
+          "Button padding: 28px for primary, 22px for secondary"
+        ]
+      },
+      "typography": {
+        "description": "Bold, clear typography with strong hierarchy.",
+        "rules": [
+          "Use Inter font family for consistency",
+          "Weight 900 for primary actions and hero text",
+          "Weight 600 for secondary actions and labels",
+          "Uppercase with letter-spacing for taglines",
+          "Line height 1.6 for body text readability"
+        ]
+      },
+      "colorContrast": {
+        "description": "Maintain high contrast for accessibility while preserving neon aesthetic.",
+        "rules": [
+          "Primary text: #f9fafb on dark backgrounds (high contrast)",
+          "Muted text: #c7d2fe for secondary information",
+          "Interactive elements: Use accent cyan (#22d3ee) for visibility",
+          "Always ensure WCAG AA compliance for text readability"
+        ]
+      },
+      "responsiveDesign": {
+        "description": "Design scales gracefully from desktop to mobile.",
+        "rules": [
+          "Breakpoint at 1000px: Switch to single column layout",
+          "Breakpoint at 520px: Reduce padding and font sizes",
+          "Maintain same visual style across all sizes",
+          "Touch targets: Minimum 44px for mobile interactions"
+        ]
+      },
+      "consistency": {
+        "description": "Maintain consistent patterns across all components.",
+        "rules": [
+          "All cards use same border radius (18px), padding (22px), and hover effects",
+          "All buttons follow primary or secondary button patterns",
+          "All panels use same glassmorphism treatment",
+          "Glow effects use consistent color and intensity patterns"
+        ]
+      }
+    },
+
+    "usageGuidelines": {
+      "whenToUseGradients": [
+        "Primary action buttons (Start Game, Submit, etc.)",
+        "Logo and brand elements",
+        "Key interactive elements that need emphasis"
+      ],
+      "whenToUseGlow": [
+        "All interactive elements (buttons, cards, menu items)",
+        "Logo and brand elements",
+        "Main container panels",
+        "Hover states (increased intensity)"
+      ],
+      "whenToUseGlassmorphism": [
+        "Main application containers",
+        "Modal overlays",
+        "Card components",
+        "Settings panels"
+      ],
+      "whenToUseBoldTypography": [
+        "Primary action buttons",
+        "Hero headings and titles",
+        "Brand name and taglines"
+      ],
+      "colorSelection": {
+        "primary": "Use neon purple (#8b5cf6) for main brand elements and borders",
+        "accent": "Use cyan (#22d3ee) for highlights, hover states, and interactive feedback",
+        "background": "Always use dark gradient background for depth",
+        "text": "Use white (#f9fafb) for primary text, muted purple (#c7d2fe) for secondary"
+      }
+    },
+
+    "accessibility": {
+      "contrast": {
+        "minimum": "WCAG AA",
+        "primaryText": "High contrast white on dark backgrounds",
+        "interactiveElements": "Clear visual feedback on hover/focus"
+      },
+      "focusStates": {
+        "description": "All interactive elements must have visible focus indicators",
+        "style": "Use accent cyan glow or outline for focus states"
+      },
+      "touchTargets": {
+        "minimum": "44px x 44px",
+        "description": "Ensure all interactive elements meet minimum touch target size on mobile"
+      }
+    }
+  }
+}
+

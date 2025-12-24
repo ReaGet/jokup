@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useSocket } from '../../hooks/useSocket'
+import { TranslationProvider } from '../utils/useTranslation'
 import JoinScreen from '../components/PlayerScreen/JoinScreen'
 import Lobby from '../components/PlayerScreen/Lobby'
 import GameIntro from '../components/PlayerScreen/GameIntro'
@@ -43,6 +44,7 @@ export default function PlayerScreen() {
   const [error, setError] = useState('')
   const [isRejoining, setIsRejoining] = useState(false)
   const [isAutoRejoining, setIsAutoRejoining] = useState(false)
+  const [language, setLanguage] = useState('en')
   const isAutoRejoiningRef = useRef(false)
 
   // Load saved state and attempt rejoin on mount
@@ -73,7 +75,7 @@ export default function PlayerScreen() {
   useEffect(() => {
     if (!socket) return
 
-    socket.on('room-joined', ({ playerId: id, players: newPlayers, isVIP: vip, roomCode: code }) => {
+    socket.on('room-joined', ({ playerId: id, players: newPlayers, isVIP: vip, roomCode: code, settings }) => {
       const joinedPlayer = newPlayers.find(p => p.id === id)
       const playerNameToSave = joinedPlayer?.name || playerName || ''
       
@@ -87,6 +89,11 @@ export default function PlayerScreen() {
       setIsRejoining(false)
       setIsAutoRejoining(false) // Reset auto rejoin flag
       isAutoRejoiningRef.current = false
+      
+      // Update language from room settings
+      if (settings?.language) {
+        setLanguage(settings.language)
+      }
       
       // Save state to localStorage
       try {
@@ -111,6 +118,11 @@ export default function PlayerScreen() {
       setIsRejoining(false)
       setIsAutoRejoining(false) // Reset auto rejoin flag
       setError('')
+      
+      // Update language from room settings
+      if (state.settings?.language) {
+        setLanguage(state.settings.language)
+      }
 
       // Update saved state
       try {
@@ -158,6 +170,12 @@ export default function PlayerScreen() {
       } else if (state.gameState === 'FINAL_WINNER') {
         setGameState('SCOREBOARD')
         setResults({ winner: state.winner, finalScores: state.scores })
+      }
+    })
+
+    socket.on('room-settings-updated', ({ settings: roomSettings }) => {
+      if (roomSettings?.language) {
+        setLanguage(roomSettings.language)
       }
     })
 
@@ -297,6 +315,7 @@ export default function PlayerScreen() {
     return () => {
       socket.off('room-joined')
       socket.off('room-rejoined')
+      socket.off('room-settings-updated')
       socket.off('player-joined')
       socket.off('error')
       socket.off('game-started')
@@ -371,64 +390,72 @@ export default function PlayerScreen() {
 
   if (!connected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <div className="text-2xl text-gray-300">Connecting to server...</div>
-      </div>
+      <TranslationProvider language={language}>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+          <div className="text-2xl text-gray-300">Connecting to server...</div>
+        </div>
+      </TranslationProvider>
     )
   }
 
-  switch (gameState) {
-    case GAME_STATES.JOIN:
-      return <JoinScreen onJoin={handleJoin} isRejoining={isRejoining} isAutoRejoining={isAutoRejoining} error={error} onErrorClear={() => setError('')} />
-    
-    case GAME_STATES.LOBBY:
-      return (
-        <Lobby
-          playerName={playerName}
-          players={players.map(p => ({ ...p, isVIP: p.isVIP }))}
-          isVIP={isVIP}
-          onStartGame={handleStartGame}
-        />
-      )
-    
-    case GAME_STATES.INTRO:
-      return <GameIntro />
-    
-    case GAME_STATES.ANSWERING:
-      return (
-        <PromptScreen
-          prompts={prompts}
-          timer={timer}
-          onAnswerSubmit={handleAnswerSubmit}
-        />
-      )
-    
-    case GAME_STATES.VOTING:
-      return (
-        <VotingScreen
-          currentMatchUp={currentMatchUp}
-          isLastLash={isLastLash}
-          lastLashAnswers={lastLashAnswers}
-          onVote={handleVote}
-          playerId={playerId}
-          timer={votingTimer}
-          timerExpired={votingTimer <= 0}
-        />
-      )
-    
-    case GAME_STATES.RESULT:
-      return (
-        <ResultFeedback
-          results={results}
-          playerId={playerId}
-          isLastLash={isLastLash}
-        />
-      )
-    
-    case GAME_STATES.SCOREBOARD:
-      return <Scoreboard scores={scores} playerId={playerId} round={round} />
-    
-    default:
-      return <JoinScreen onJoin={handleJoin} isRejoining={isRejoining} isAutoRejoining={isAutoRejoining} error={error} onErrorClear={() => setError('')} />
-  }
+  return (
+    <TranslationProvider language={language}>
+      {(() => {
+        switch (gameState) {
+          case GAME_STATES.JOIN:
+            return <JoinScreen onJoin={handleJoin} isRejoining={isRejoining} isAutoRejoining={isAutoRejoining} error={error} onErrorClear={() => setError('')} />
+          
+          case GAME_STATES.LOBBY:
+            return (
+              <Lobby
+                playerName={playerName}
+                players={players.map(p => ({ ...p, isVIP: p.isVIP }))}
+                isVIP={isVIP}
+                onStartGame={handleStartGame}
+              />
+            )
+          
+          case GAME_STATES.INTRO:
+            return <GameIntro />
+          
+          case GAME_STATES.ANSWERING:
+            return (
+              <PromptScreen
+                prompts={prompts}
+                timer={timer}
+                onAnswerSubmit={handleAnswerSubmit}
+              />
+            )
+          
+          case GAME_STATES.VOTING:
+            return (
+              <VotingScreen
+                currentMatchUp={currentMatchUp}
+                isLastLash={isLastLash}
+                lastLashAnswers={lastLashAnswers}
+                onVote={handleVote}
+                playerId={playerId}
+                timer={votingTimer}
+                timerExpired={votingTimer <= 0}
+              />
+            )
+          
+          case GAME_STATES.RESULT:
+            return (
+              <ResultFeedback
+                results={results}
+                playerId={playerId}
+                isLastLash={isLastLash}
+              />
+            )
+          
+          case GAME_STATES.SCOREBOARD:
+            return <Scoreboard scores={scores} playerId={playerId} round={round} />
+          
+          default:
+            return <JoinScreen onJoin={handleJoin} isRejoining={isRejoining} isAutoRejoining={isAutoRejoining} error={error} onErrorClear={() => setError('')} />
+        }
+      })()}
+    </TranslationProvider>
+  )
 }

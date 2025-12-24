@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSocket } from '../hooks/useSocket'
+import { TranslationProvider } from './utils/useTranslation'
+import StartScreen from './components/MainScreen/StartScreen'
+import SettingsModal from './components/MainScreen/SettingsModal'
 import Lobby from './components/MainScreen/Lobby'
 import GameIntro from './components/MainScreen/GameIntro'
 import AnsweringPhase from './components/MainScreen/AnsweringPhase'
@@ -9,6 +12,8 @@ import VotingPhase from './components/MainScreen/VotingPhase'
 import ResultReveal from './components/MainScreen/ResultReveal'
 import Scoreboard from './components/MainScreen/Scoreboard'
 import FinalWinner from './components/MainScreen/FinalWinner'
+
+const STORAGE_KEY = 'jokup_host_settings'
 
 const GAME_STATES = {
   LOBBY: 'LOBBY',
@@ -22,6 +27,9 @@ const GAME_STATES = {
 
 export default function MainScreen() {
   const { socket, connected } = useSocket()
+  const [showStartScreen, setShowStartScreen] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
+  const [settings, setSettings] = useState({ language: 'en', volume: 50 })
   const [gameState, setGameState] = useState('LOBBY')
   const [roomCode, setRoomCode] = useState('')
   const [players, setPlayers] = useState([])
@@ -39,14 +47,39 @@ export default function MainScreen() {
   const [lastLashAnswers, setLastLashAnswers] = useState([])
   const [playerAnswerCounts, setPlayerAnswerCounts] = useState({})
 
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedSettings = localStorage.getItem(STORAGE_KEY)
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings)
+        setSettings({
+          language: parsed.language || 'en',
+          volume: parsed.volume !== undefined ? parsed.volume : 50,
+        })
+      }
+    } catch (err) {
+      console.error('Error loading settings:', err)
+    }
+  }, [])
+
   useEffect(() => {
     if (!socket) return
 
-    // Create or get room
-    socket.emit('create-room')
-    socket.on('room-created', ({ roomCode: code }) => {
+    socket.on('room-created', ({ roomCode: code, settings: roomSettings }) => {
       setRoomCode(code)
       setGameState('LOBBY')
+      setShowStartScreen(false)
+      // Update settings if room has different settings
+      if (roomSettings) {
+        setSettings(roomSettings)
+      }
+    })
+
+    socket.on('room-settings-updated', ({ settings: roomSettings }) => {
+      if (roomSettings) {
+        setSettings(roomSettings)
+      }
     })
 
     // Also listen for initial room state if reconnecting
@@ -165,6 +198,7 @@ export default function MainScreen() {
 
     return () => {
       socket.off('room-created')
+      socket.off('room-settings-updated')
       socket.off('player-joined')
       socket.off('game-started')
       socket.off('game-state-update')
@@ -182,22 +216,57 @@ export default function MainScreen() {
     }
   }, [socket])
 
-  // Auto-create room on mount
-  useEffect(() => {
-    if (socket && connected && !roomCode) {
-      socket.emit('create-room')
+  const handleStartGame = () => {
+    if (socket && connected) {
+      // Create room with current settings
+      socket.emit('create-room', { settings })
     }
-  }, [socket, connected, roomCode])
+  }
+
+  const handleSettingsChange = useCallback((newSettings) => {
+    setSettings(newSettings)
+  }, [])
 
   if (!connected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <div className="text-2xl text-gray-300">Connecting to server...</div>
-      </div>
+      <TranslationProvider language={settings.language}>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+          <div className="text-2xl text-gray-300">Connecting to server...</div>
+        </div>
+      </TranslationProvider>
     )
   }
 
-  switch (gameState) {
+  // Show start screen before room is created
+  if (showStartScreen) {
+    return (
+      <TranslationProvider language={settings.language}>
+        <StartScreen
+          onStartGame={handleStartGame}
+          onOpenSettings={() => setShowSettings(true)}
+        />
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          onSettingsChange={handleSettingsChange}
+          socket={socket}
+          roomCode={roomCode}
+        />
+      </TranslationProvider>
+    )
+  }
+
+  return (
+    <TranslationProvider language={settings.language}>
+      <SettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        onSettingsChange={handleSettingsChange}
+        socket={socket}
+        roomCode={roomCode}
+      />
+      {(() => {
+        switch (gameState) {
     case GAME_STATES.LOBBY:
       return <Lobby roomCode={roomCode} players={players} waitingForVIP={players.length > 0 && !players.find(p => p.isVIP)} />
     
@@ -235,7 +304,10 @@ export default function MainScreen() {
     case GAME_STATES.FINAL_WINNER:
       return <FinalWinner finalScores={finalScores} winner={winner} />
     
-    default:
-      return <Lobby roomCode={roomCode} players={players} waitingForVIP={true} />
-  }
+          default:
+            return <Lobby roomCode={roomCode} players={players} waitingForVIP={true} />
+        }
+      })()}
+    </TranslationProvider>
+  )
 }

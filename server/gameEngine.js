@@ -1,5 +1,5 @@
 const { GAME_STATES, ROUNDS, TIMERS, SCORING } = require('../utils/gameState');
-const { selectPrompts, round1Prompts, round2Prompts, lastLashPrompts } = require('./prompts');
+const { selectPrompts, getPrompts } = require('./prompts');
 
 class GameEngine {
   constructor(roomManager) {
@@ -13,8 +13,9 @@ class GameEngine {
     const players = [...room.players].sort(() => Math.random() - 0.5);
     const numPlayers = players.length;
     
-    // Select prompts based on round
-    const promptPool = round === ROUNDS.ROUND_1 ? round1Prompts : round2Prompts;
+    // Get prompts based on round and room language
+    const language = room.settings?.language || 'en';
+    const promptPool = getPrompts(language, round);
     // We need at least numPlayers prompts (each player gets 2, but prompts are shared)
     // For n players, we need n prompts (each shared by 2 players = 2n total assignments = 2 per player)
     const promptsNeeded = numPlayers;
@@ -66,6 +67,8 @@ class GameEngine {
 
   // Assign Last Lash prompt (same for all players)
   assignLastLash(room) {
+    const language = room.settings?.language || 'en';
+    const lastLashPrompts = getPrompts(language, ROUNDS.ROUND_3);
     const selectedPrompts = selectPrompts(lastLashPrompts, 1);
     const prompt = {
       id: 'lastlash-1',

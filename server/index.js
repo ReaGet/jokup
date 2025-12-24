@@ -34,11 +34,14 @@ io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
   // Create room (for main screen)
-  socket.on('create-room', () => {
-    const room = roomManager.createRoom();
+  socket.on('create-room', ({ settings } = {}) => {
+    const room = roomManager.createRoom(settings);
     socket.join(room.roomCode);
     socket.roomCode = room.roomCode;
-    socket.emit('room-created', { roomCode: room.roomCode });
+    socket.emit('room-created', { 
+      roomCode: room.roomCode,
+      settings: room.settings,
+    });
   });
 
   // Join room
@@ -80,6 +83,7 @@ io.on('connection', (socket) => {
           gameState: room.gameState,
           round: room.gameData?.round || 1,
           scores: room.players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+          settings: room.settings,
         };
 
         // Add game-specific state based on current phase
@@ -178,13 +182,14 @@ io.on('connection', (socket) => {
     // Send confirmation to joining player
     socket.emit('room-joined', {
       playerId: result.player.id,
-      players: roomManager.getRoom(roomCode).players.map(p => ({
+      players: room.players.map(p => ({
         id: p.id,
         name: p.name,
         score: p.score,
       })),
       isVIP: result.isVIP,
       roomCode,
+      settings: room.settings,
     });
 
     // Notify all players in room (including main screen)
@@ -232,6 +237,7 @@ io.on('connection', (socket) => {
       gameState: room.gameState,
       round: room.gameData?.round || 1,
       scores: room.players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+      settings: room.settings,
     };
 
     // Add game-specific state based on current phase
@@ -318,6 +324,32 @@ io.on('connection', (socket) => {
         isVIP: p.id === room.vip,
       })),
     });
+  });
+
+  // Update room settings (VIP only)
+  socket.on('update-room-settings', ({ roomCode, settings }) => {
+    const room = roomManager.getRoom(roomCode);
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    const player = roomManager.getPlayer(roomCode, socket.playerId);
+    // Only VIP or host (if no VIP yet) can update settings
+    if (room.vip && player && room.vip !== player.id) {
+      socket.emit('error', { message: 'Only VIP can update room settings' });
+      return;
+    }
+
+    const success = roomManager.updateRoomSettings(roomCode, settings);
+    if (success) {
+      // Notify all clients in the room about settings update
+      io.to(roomCode).emit('room-settings-updated', {
+        settings: room.settings,
+      });
+    } else {
+      socket.emit('error', { message: 'Failed to update room settings' });
+    }
   });
 
   // Start game (VIP only)

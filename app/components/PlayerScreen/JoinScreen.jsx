@@ -1,48 +1,65 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useTranslation } from '../../utils/useTranslation'
 
 const STORAGE_KEY = 'jokup_player_state'
 
 export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoining = false, error: serverError = '', onErrorClear }) {
+  const { t } = useTranslation()
+  const searchParams = useSearchParams()
   const [roomCode, setRoomCode] = useState('')
   const [playerName, setPlayerName] = useState('')
   const [error, setError] = useState('')
 
-  // Load saved values from localStorage on mount
+  // Load saved values from localStorage and URL params on mount
   useEffect(() => {
+    // First, try to get code from URL
+    const codeFromUrl = searchParams?.get('code')
+    
     try {
       const savedState = localStorage.getItem(STORAGE_KEY)
       if (savedState) {
         const { roomCode: savedRoomCode, playerName: savedPlayerName } = JSON.parse(savedState)
-        if (savedRoomCode) {
+        // Prefer URL code over saved code
+        if (codeFromUrl) {
+          setRoomCode(codeFromUrl.toUpperCase())
+        } else if (savedRoomCode) {
           setRoomCode(savedRoomCode)
         }
         if (savedPlayerName) {
           setPlayerName(savedPlayerName)
         }
+      } else if (codeFromUrl) {
+        // No saved state, but we have code from URL
+        setRoomCode(codeFromUrl.toUpperCase())
       }
     } catch (err) {
       console.error('Error loading saved state:', err)
+      // Still try to use URL code if available
+      if (codeFromUrl) {
+        setRoomCode(codeFromUrl.toUpperCase())
+      }
     }
-  }, [])
+  }, [searchParams])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     setError('')
 
     if (!roomCode || roomCode.length !== 4) {
-      setError('Please enter a valid 4-letter room code')
+      setError(t('ui.pleaseEnterValidCode'))
       return
     }
 
     if (!playerName || playerName.trim().length === 0) {
-      setError('Please enter your name')
+      setError(t('ui.pleaseEnterName'))
       return
     }
 
     if (playerName.length > 20) {
-      setError('Name must be 20 characters or less')
+      setError(t('ui.nameMaxLength'))
       return
     }
 
@@ -67,13 +84,13 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent">
             JOKUP
           </h1>
-          <p className="text-gray-300">Enter room code to join</p>
+          <p className="text-gray-300">{t('ui.enterRoomCode')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-gray-300 mb-2 font-semibold">
-              Room Code
+              {t('ui.roomCode')}
             </label>
             <input
               type="text"
@@ -97,7 +114,7 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
 
           <div>
             <label className="block text-gray-300 mb-2 font-semibold">
-              Your Name
+              {t('ui.yourName')}
             </label>
             <input
               type="text"
@@ -121,7 +138,7 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
 
           {isRejoining && (
             <div className="bg-blue-500/20 border-2 border-blue-500 rounded-lg p-3 text-blue-300 text-center">
-              Rejoining game...
+              {t('ui.rejoiningGame')}
             </div>
           )}
 
@@ -136,7 +153,7 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
             disabled={isRejoining}
             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg text-xl transition-all transform hover:scale-105"
           >
-            {isRejoining ? 'Rejoining...' : 'Join Game'}
+            {isRejoining ? t('ui.rejoining') : t('ui.joinGame')}
           </button>
         </form>
       </div>

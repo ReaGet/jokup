@@ -1,7 +1,9 @@
 'use client'
 
 import { useMemo, useState, useEffect, useRef } from 'react'
+import { QRCodeSVG } from 'qrcode.react'
 import { PlayerAvatar } from '../../utils/avatarUtils'
+import { useTranslation } from '../../utils/useTranslation'
 
 // Player card component
 function PlayerCard({ player, index, totalPlayers, radius }) {
@@ -49,8 +51,16 @@ function PlayerCard({ player, index, totalPlayers, radius }) {
 }
 
 export default function Lobby({ roomCode, players, waitingForVIP }) {
+  const { t } = useTranslation()
   const containerRef = useRef(null)
   const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 })
+  const [joinUrl, setJoinUrl] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && roomCode) {
+      setJoinUrl(`${window.location.origin}/player?code=${roomCode}`)
+    }
+  }, [roomCode])
   
   // Update dimensions on resize
   useEffect(() => {
@@ -94,10 +104,16 @@ export default function Lobby({ roomCode, players, waitingForVIP }) {
     >
       {/* Top Right Corner - Join Audience Section */}
       <div className="absolute top-6 right-6 text-right z-10">
-        <div className="text-green-400 text-sm mb-1">Join the audience!</div>
-        <div className="bg-black text-white text-2xl font-bold px-4 py-2 mb-1 border-2 border-white">
+        <div className="text-green-400 text-sm mb-2">{t('ui.joinAudience')}</div>
+        <div className="bg-black text-white text-2xl font-bold px-4 py-2 mb-2 border-2 border-white">
           {roomCode}
         </div>
+        {joinUrl && (
+          <div className="bg-white p-2 rounded mb-2 inline-block">
+            <QRCodeSVG value={joinUrl} size={120} />
+          </div>
+        )}
+        <div className="text-gray-400 text-xs mb-1">{t('ui.scanToJoin')}</div>
         <div className="text-gray-400 text-xs">jokup.tv</div>
       </div>
 
@@ -178,7 +194,7 @@ export default function Lobby({ roomCode, players, waitingForVIP }) {
       <div className="relative w-full h-screen">
         {players.length === 0 ? (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-10 mt-32">
-            <div className="text-gray-300 text-xl">Waiting for players to join...</div>
+            <div className="text-gray-300 text-xl">{t('ui.waitingForPlayers')}</div>
           </div>
         ) : (
           players.map((player, index) => (
@@ -198,7 +214,7 @@ export default function Lobby({ roomCode, players, waitingForVIP }) {
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
           <div className="bg-black/80 border-2 border-yellow-400 px-6 py-3 rounded-lg">
             <div className="text-yellow-400 text-lg font-bold animate-pulse">
-              Waiting for VIP to start the game...
+              {t('ui.waitingForVIP')}
             </div>
           </div>
         </div>
