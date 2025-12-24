@@ -1,0 +1,1083 @@
+{
+  "designSystem": {
+    "name": "Jokup Design System",
+    "version": "2.0.0",
+    "description": "Comprehensive design system for Jokup party game application. This document outlines exact styling specifications for all components and screens to guide AI in building new features.",
+    "philosophy": "A modern, vibrant party game interface with neon aesthetics, dark theme, and playful energy. The design balances futuristic cyberpunk vibes with approachable, fun interactions. Uses glassmorphism, neon glows, and bold typography to create an engaging gaming experience.",
+    
+    "colorPalette": {
+      "primary": {
+        "neon": "#8b5cf6",
+        "neonSoft": "rgba(139, 92, 246, 0.6)",
+        "description": "Primary purple neon color - used for main accents, borders, and glow effects"
+      },
+      "secondary": {
+        "accent": "#22d3ee",
+        "description": "Cyan accent color - used for highlights, hover states, and gradient combinations"
+      },
+      "background": {
+        "main": "radial-gradient(circle at top, #1b0f3b, #0b0618 70%)",
+        "mainGradient": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "panel": "rgba(25, 15, 60, 0.75)",
+        "card": "rgba(255, 255, 255, 0.04)",
+        "blackOverlay": "rgba(0, 0, 0, 0.4)",
+        "blackOverlayStrong": "rgba(0, 0, 0, 0.6)",
+        "description": "Dark purple gradient background with semi-transparent panels using backdrop blur"
+      },
+      "text": {
+        "main": "#f9fafb",
+        "muted": "#c7d2fe",
+        "secondary": "#c7d2fe",
+        "gray300": "#d1d5db",
+        "gray400": "#9ca3af",
+        "description": "High contrast white for primary text, soft purple-tinted white for secondary text"
+      },
+      "gradients": {
+        "primary": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+        "primaryButton": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+        "joinButton": "linear-gradient(to-r, from-purple-600, to-pink-600)",
+        "title": "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500",
+        "background": "radial-gradient(circle at top, #1b0f3b, #0b0618 70%)",
+        "backgroundAlt": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "description": "Diagonal gradients for buttons and interactive elements, radial for backgrounds"
+      },
+      "borders": {
+        "primary": "rgba(139, 92, 246, 0.35)",
+        "purple": "#8b5cf6",
+        "purple500": "border-purple-500",
+        "cyan": "#22d3ee",
+        "yellow": "#fbbf24",
+        "yellow400": "border-yellow-400",
+        "yellow500": "border-yellow-500",
+        "blue": "#3b82f6",
+        "blue500": "border-blue-500",
+        "pink": "#ec4899",
+        "pink500": "border-pink-500",
+        "white": "#ffffff",
+        "red": "#ef4444",
+        "red500": "border-red-500",
+        "green": "#22c55e",
+        "description": "Color-coded borders for different UI states and components"
+      },
+      "gameStates": {
+        "lobby": {
+          "background": "#1a4d3a",
+          "pattern": "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(34, 197, 94, 0.1) 10px, rgba(34, 197, 94, 0.1) 20px)",
+          "textGreen": "#22c55e",
+          "textBlue": "#3b82f6",
+          "description": "Green-themed lobby screen with diagonal stripe pattern"
+        },
+        "scoreboard": {
+          "firstPlace": {
+            "gradient": "from-yellow-500/30 to-yellow-600/30",
+            "border": "border-2 border-yellow-400",
+            "text": "text-yellow-400"
+          },
+        "secondPlace": {
+            "gradient": "from-gray-400/30 to-gray-500/30",
+            "border": "border-2 border-gray-400",
+            "text": "text-gray-300"
+          },
+        "thirdPlace": {
+            "gradient": "from-orange-600/30 to-orange-700/30",
+            "border": "border-2 border-orange-500",
+            "text": "text-orange-400"
+          },
+        "default": {
+            "gradient": "from-purple-600/30 to-purple-700/30",
+            "border": "border border-purple-400"
+          }
+        },
+        "voting": {
+          "answerA": {
+            "border": "border-2 border-blue-500",
+            "text": "text-blue-400",
+            "bg": "bg-black/40"
+          },
+          "answerB": {
+            "border": "border-2 border-pink-500",
+            "text": "text-pink-400",
+            "bg": "bg-black/40"
+          }
+        }
+      },
+      "overlays": {
+        "subtle": "rgba(255, 255, 255, 0.04)",
+        "border": "rgba(139, 92, 246, 0.35)",
+        "modal": "bg-black/60",
+        "description": "Very subtle white overlays for depth, semi-transparent borders for definition"
+      },
+      "alerts": {
+        "error": {
+          "background": "bg-red-500/20",
+          "border": "border-2 border-red-500",
+          "text": "text-red-300"
+        },
+        "info": {
+          "background": "bg-blue-500/20",
+          "border": "border-2 border-blue-500",
+          "text": "text-blue-300"
+        },
+        "success": {
+          "background": "bg-green-500/20",
+          "border": "border-2 border-green-500",
+          "text": "text-green-300"
+        }
+      }
+    },
+
+    "typography": {
+      "fontFamily": {
+        "primary": "\"Inter\", system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        "fallback": "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        "display": "Arial Black, sans-serif",
+        "description": "Modern, clean sans-serif with excellent readability. Arial Black for display text in lobby."
+      },
+      "scale": {
+        "h1": {
+          "desktop": "64px",
+          "tablet": "48px",
+          "mobile": "38px",
+          "responsive": "clamp(38px, 8vw, 64px)",
+          "weight": 900,
+          "letterSpacing": "1px",
+          "usage": "Main brand title, hero headings"
+        },
+        "h2": {
+          "size": "30px",
+          "responsive": "clamp(22px, 3vw, 30px)",
+          "weight": 900,
+          "usage": "Primary action buttons, major section headers"
+        },
+        "h3": {
+          "size": "22px",
+          "weight": 600,
+          "usage": "Card titles, menu items"
+        },
+        "h4": {
+          "size": "18px",
+          "weight": 600,
+          "usage": "Menu item labels, secondary text"
+        },
+        "body": {
+          "large": "20px",
+          "medium": "18px",
+          "small": "14px",
+          "lineHeight": 1.6,
+          "usage": "Main descriptive text, taglines"
+        },
+        "tagline": {
+          "size": "18px",
+          "letterSpacing": "2px",
+          "textTransform": "uppercase",
+          "color": "#22d3ee",
+          "usage": "Brand taglines, section labels"
+        },
+        "display": {
+          "lobbyTitle": {
+            "size": "6xl md:text-7xl",
+            "weight": 900,
+            "fontFamily": "Arial Black, sans-serif",
+            "letterSpacing": "-2px",
+            "textShadow": "3px 3px 0px rgba(0, 0, 0, 0.8), -1px -1px 0px rgba(255, 255, 255, 0.3)",
+            "usage": "Lobby screen game title"
+          }
+        }
+      },
+      "weights": {
+        "normal": 400,
+        "medium": 600,
+        "semibold": 600,
+        "bold": 700,
+        "extrabold": 800,
+        "black": 900
+      },
+      "effects": {
+        "gradientText": "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent",
+        "textShadow": "3px 3px 0px rgba(0, 0, 0, 0.8), -1px -1px 0px rgba(255, 255, 255, 0.3)",
+        "dropShadow": "drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))"
+      }
+    },
+
+    "spacing": {
+      "scale": {
+        "xs": "4px",
+        "sm": "8px",
+        "md": "12px",
+        "lg": "16px",
+        "xl": "20px",
+        "2xl": "22px",
+        "3xl": "28px",
+        "4xl": "32px",
+        "5xl": "36px",
+        "6xl": "40px",
+        "7xl": "48px"
+      },
+      "padding": {
+        "container": "48px",
+        "containerMobile": "36px",
+        "containerSmall": "20px",
+        "containerResponsive": "clamp(36px, 5vw, 48px)",
+        "button": "28px",
+        "buttonMobile": "20px",
+        "buttonResponsive": "clamp(20px, 2.5vw, 28px)",
+        "card": "22px",
+        "cardLarge": "p-6",
+        "cardXL": "p-8",
+        "input": "px-4 py-3",
+        "modal": "p-8",
+        "description": "Generous padding for breathing room, responsive scaling"
+      },
+      "gap": {
+        "tight": "20px",
+        "normal": "28px",
+        "loose": "32px",
+        "section": "48px",
+        "grid": "gap-4",
+        "gridLarge": "gap-6",
+        "description": "Consistent gaps for grid layouts and flex containers"
+      }
+    },
+
+    "borderRadius": {
+      "small": "18px",
+      "medium": "18px",
+      "large": "24px",
+      "xl": "28px",
+      "2xl": "rounded-2xl",
+      "logo": "24px",
+      "button": "18px",
+      "input": "rounded-lg",
+      "card": "18px",
+      "panel": "28px",
+      "description": "Generous rounding for modern, friendly appearance. Large radius for main containers, medium for cards and buttons"
+    },
+
+    "shadows": {
+      "glow": {
+        "primary": "0 0 40px rgba(139, 92, 246, 0.35)",
+        "accent": "0 0 40px rgba(34, 211, 238, 0.45)",
+        "hover": "0 0 60px rgba(34, 211, 238, 0.7)",
+        "card": "0 0 25px rgba(34, 211, 238, 0.35)",
+        "logo": "0 0 40px rgba(139, 92, 246, 0.6)",
+        "description": "Neon glow effects - primary purple for general elements, cyan for interactive states"
+      },
+      "standard": {
+        "sm": "shadow-sm",
+        "md": "shadow-md",
+        "lg": "shadow-lg",
+        "xl": "shadow-xl",
+        "2xl": "shadow-2xl"
+      },
+      "inset": {
+        "subtle": "inset 0 0 0 transparent",
+        "description": "Subtle inset shadows for depth when needed"
+      }
+    },
+
+    "effects": {
+      "backdropBlur": {
+        "value": "16px",
+        "sm": "backdrop-blur-sm",
+        "lg": "backdrop-blur-lg",
+        "usage": "Applied to panel backgrounds for glassmorphism effect"
+      },
+      "transitions": {
+        "fast": "0.12s ease",
+        "normal": "0.15s ease",
+        "slow": "0.3s ease",
+        "duration300": "duration-300",
+        "duration500": "duration-500",
+        "duration1000": "duration-1000",
+        "properties": ["transform", "box-shadow", "border-color", "opacity", "scale"],
+        "description": "Smooth, quick transitions for interactive elements"
+      },
+      "hover": {
+        "transform": "translateY(-2px) to translateY(-3px)",
+        "scale": "scale-105",
+        "description": "Subtle lift effect on hover for buttons and cards"
+      },
+      "animations": {
+        "fadeIn": "animate-fade-in",
+        "pulse": "animate-pulse",
+        "keyframes": {
+          "fade-in": "from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); }",
+          "duration": "0.5s ease-out"
+        }
+      }
+    },
+
+    "layout": {
+      "grid": {
+        "main": "1.2fr 1fr",
+        "mobile": "1fr",
+        "twoColumn": "grid-cols-1 md:grid-cols-2",
+        "description": "Two-column layout for desktop (brand/actions), single column for mobile"
+      },
+      "maxWidth": {
+        "container": "1280px",
+        "content": "520px",
+        "md": "max-w-md",
+        "4xl": "max-w-4xl",
+        "5xl": "max-w-5xl",
+        "description": "Centered container with max-width for readability"
+      },
+      "breakpoints": {
+        "tablet": "1000px",
+        "mobile": "520px",
+        "md": "768px",
+        "description": "Responsive breakpoints for layout adjustments"
+      },
+      "centering": {
+        "flex": "flex items-center justify-center",
+        "absolute": "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+        "description": "Common centering patterns"
+      }
+    },
+
+    "components": {
+      "logo": {
+        "size": {
+          "desktop": "96px",
+          "mobile": "72px",
+          "responsive": "clamp(72px, 8vw, 96px)"
+        },
+        "iconSize": {
+          "desktop": "44px",
+          "mobile": "32px",
+          "responsive": "clamp(32px, 4vw, 44px)"
+        },
+        "borderRadius": "24px",
+        "background": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+        "shadow": "0 0 40px rgba(139, 92, 246, 0.6)",
+        "description": "Gradient background with emoji icon, strong glow effect"
+      },
+      "button": {
+        "primary": {
+          "padding": "28px",
+          "paddingResponsive": "clamp(20px, 2.5vw, 28px)",
+          "fontSize": "30px",
+          "fontSizeResponsive": "clamp(22px, 3vw, 30px)",
+          "fontWeight": 900,
+          "borderRadius": "18px",
+          "background": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+          "shadow": "0 0 40px rgba(34, 211, 238, 0.45)",
+          "color": "#f9fafb",
+          "transition": "transform 0.15s ease, box-shadow 0.15s ease",
+          "hover": {
+            "transform": "translateY(-3px)",
+            "shadow": "0 0 60px rgba(34, 211, 238, 0.7)"
+          },
+          "description": "Large, bold primary action button with gradient and strong glow"
+        },
+        "secondary": {
+          "padding": "22px",
+          "background": "rgba(255, 255, 255, 0.04)",
+          "border": "1px solid rgba(139, 92, 246, 0.35)",
+          "borderRadius": "18px",
+          "fontSize": "18px",
+          "fontWeight": 600,
+          "color": "#f9fafb",
+          "transition": "transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease",
+          "hover": {
+            "transform": "translateY(-2px)",
+            "borderColor": "#22d3ee",
+            "shadow": "0 0 25px rgba(34, 211, 238, 0.35)"
+          },
+          "description": "Subtle card-style buttons with border and glow on hover"
+        },
+        "join": {
+          "background": "bg-gradient-to-r from-purple-600 to-pink-600",
+          "hover": "hover:from-purple-700 hover:to-pink-700",
+          "padding": "py-4",
+          "fontSize": "text-xl",
+          "fontWeight": "font-bold",
+          "borderRadius": "rounded-lg",
+          "transition": "transition-all transform hover:scale-105",
+          "description": "Join game button with purple-to-pink gradient"
+        },
+        "settings": {
+          "background": "bg-purple-600",
+          "hover": "hover:bg-purple-700",
+          "padding": "px-6 py-3",
+          "fontWeight": "font-bold",
+          "borderRadius": "rounded-lg",
+          "transition": "transition-all",
+          "description": "Settings modal close button"
+        }
+      },
+      "card": {
+        "base": {
+          "background": "rgba(255, 255, 255, 0.04)",
+          "border": "1px solid rgba(139, 92, 246, 0.35)",
+          "borderRadius": "18px",
+          "padding": "22px",
+          "transition": "transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease"
+        },
+        "glassmorphic": {
+          "background": "bg-black/40",
+          "backdropFilter": "backdrop-blur-lg",
+          "borderRadius": "rounded-2xl",
+          "border": "border-2",
+          "padding": "p-6 or p-8",
+          "description": "Glassmorphic cards with backdrop blur"
+        },
+        "hover": {
+          "transform": "translateY(-2px)",
+          "borderColor": "#22d3ee",
+          "shadow": "0 0 25px rgba(34, 211, 238, 0.35)"
+        },
+        "description": "Glassmorphic cards with subtle background, bordered, interactive hover states"
+      },
+      "panel": {
+        "main": {
+          "background": "rgba(25, 15, 60, 0.75)",
+          "backdropFilter": "blur(16px)",
+          "borderRadius": "28px",
+          "padding": "clamp(36px, 5vw, 48px)",
+          "shadow": "0 0 40px rgba(139, 92, 246, 0.35)",
+          "gap": "48px",
+          "description": "Main container panels with glassmorphism effect"
+        },
+        "modal": {
+          "background": "bg-gray-900",
+          "borderRadius": "rounded-2xl",
+          "padding": "p-8",
+          "border": "border-2 border-purple-500",
+          "shadow": "shadow-2xl",
+          "maxWidth": "max-w-md",
+          "description": "Modal dialog panels"
+        }
+      },
+      "input": {
+        "base": {
+          "background": "bg-gray-800",
+          "border": "border-2 border-purple-500",
+          "borderRadius": "rounded-lg",
+          "padding": "px-4 py-3",
+          "color": "text-white",
+          "focus": "focus:outline-none focus:border-yellow-400",
+          "description": "Text input fields"
+        },
+        "roomCode": {
+          "fontSize": "text-2xl",
+          "fontWeight": "font-bold",
+          "textAlign": "text-center",
+          "letterSpacing": "tracking-widest",
+          "textTransform": "uppercase",
+          "description": "Room code input with large, bold, uppercase text"
+        },
+        "name": {
+          "fontSize": "text-lg",
+          "description": "Player name input"
+        }
+      },
+      "timer": {
+        "container": {
+          "background": "bg-black/40",
+          "backdropFilter": "backdrop-blur-lg",
+          "borderRadius": "rounded-2xl",
+          "padding": "p-8",
+          "border": "border-2 border-yellow-500",
+          "textAlign": "text-center"
+        },
+        "label": {
+          "fontSize": "text-2xl",
+          "color": "text-gray-300",
+          "marginBottom": "mb-4"
+        },
+        "value": {
+          "fontSize": "text-9xl",
+          "fontWeight": "font-bold",
+          "color": "text-yellow-400",
+          "pulse": "text-red-400 animate-pulse (when <= 10)",
+          "description": "Large timer display, red and pulsing when <= 10 seconds"
+        }
+      },
+      "badge": {
+        "vip": {
+          "background": "bg-yellow-400",
+          "color": "text-black",
+          "fontSize": "text-[10px]",
+          "fontWeight": "font-bold",
+          "padding": "px-1.5 py-0.5",
+          "borderRadius": "rounded",
+          "border": "border-2 border-black",
+          "shadow": "shadow-lg",
+          "description": "VIP player badge"
+        }
+      },
+      "avatar": {
+        "description": "Player avatars use utility from avatarUtils.js"
+      },
+      "qrCode": {
+        "container": {
+          "background": "bg-white",
+          "padding": "p-2",
+          "borderRadius": "rounded",
+          "marginBottom": "mb-2",
+          "display": "inline-block"
+        },
+        "size": 120,
+        "description": "QR code for joining game"
+      }
+    },
+
+    "screens": {
+      "startScreen": {
+        "background": "radial-gradient(circle at top, #1b0f3b, #0b0618 70%)",
+        "container": {
+          "maxWidth": "max-w-[1280px]",
+          "grid": "flex-col md:grid md:grid-cols-[1.2fr_1fr]",
+          "background": "rgba(25, 15, 60, 0.75)",
+          "backdropFilter": "blur(16px)",
+          "borderRadius": "28px",
+          "padding": "clamp(36px, 5vw, 48px)",
+          "shadow": "0 0 40px rgba(139, 92, 246, 0.35)",
+          "gap": "48px"
+        },
+        "leftSide": {
+          "gap": "28px",
+          "description": "Brand section with logo, tagline, description"
+        },
+        "rightSide": {
+          "gap": "32px",
+          "description": "Actions section with start button and menu grid"
+        },
+        "menuGrid": {
+          "grid": "grid grid-cols-1 md:grid-cols-2",
+          "gap": "20px",
+          "description": "2x2 grid of menu cards (Settings, How to Play, Credits, Accessibility)"
+        }
+      },
+      "lobby": {
+        "background": "#1a4d3a",
+        "pattern": "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(34, 197, 94, 0.1) 10px, rgba(34, 197, 94, 0.1) 20px)",
+        "joinSection": {
+          "position": "absolute top-6 right-6",
+          "textAlign": "text-right",
+          "zIndex": "z-10"
+        },
+        "roomCode": {
+          "background": "bg-black",
+          "color": "text-white",
+          "fontSize": "text-2xl",
+          "fontWeight": "font-bold",
+          "padding": "px-4 py-2",
+          "border": "border-2 border-white",
+          "marginBottom": "mb-2"
+        },
+        "title": {
+          "position": "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+          "filter": "drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))",
+          "fontSize": "text-6xl md:text-7xl",
+          "fontWeight": "font-black",
+          "textTransform": "uppercase",
+          "letterSpacing": "-2px",
+          "textShadow": "3px 3px 0px rgba(0, 0, 0, 0.8), -1px -1px 0px rgba(255, 255, 255, 0.3)",
+          "fontFamily": "Arial Black, sans-serif"
+        },
+        "playerCard": {
+          "position": "absolute",
+          "layout": "circular (calculated with radius)",
+          "avatar": "PlayerAvatar component",
+          "nameBanner": {
+            "background": "bg-black",
+            "border": "border-2 border-white",
+            "padding": "px-3 py-1",
+            "fontSize": "text-sm",
+            "fontWeight": "font-bold",
+            "textTransform": "uppercase",
+            "letterSpacing": "tracking-wider",
+            "color": "text-white"
+          }
+        },
+        "waitingMessage": {
+          "position": "absolute bottom-8 left-1/2 transform -translate-x-1/2",
+          "background": "bg-black/80",
+          "border": "border-2 border-yellow-400",
+          "padding": "px-6 py-3",
+          "borderRadius": "rounded-lg",
+          "color": "text-yellow-400",
+          "fontSize": "text-lg",
+          "fontWeight": "font-bold",
+          "animation": "animate-pulse"
+        }
+      },
+      "joinScreen": {
+        "background": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "container": {
+          "maxWidth": "max-w-md",
+          "background": "bg-black/40",
+          "backdropFilter": "backdrop-blur-lg",
+          "borderRadius": "rounded-2xl",
+          "padding": "p-8",
+          "border": "border-2 border-purple-500"
+        },
+        "title": {
+          "fontSize": "text-5xl",
+          "fontWeight": "font-bold",
+          "marginBottom": "mb-4",
+          "gradient": "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent"
+        }
+      },
+      "answeringPhase": {
+        "background": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "layout": "flex flex-col items-center justify-center",
+        "timer": "Uses timer component",
+        "waitingText": {
+          "fontSize": "text-3xl",
+          "color": "text-gray-300",
+          "animation": "animate-pulse"
+        }
+      },
+      "votingPhase": {
+        "background": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "layout": "flex flex-col items-center justify-center",
+        "container": {
+          "maxWidth": "max-w-5xl",
+          "gap": "space-y-8"
+        },
+        "promptCard": {
+          "background": "bg-black/40",
+          "backdropFilter": "backdrop-blur-lg",
+          "borderRadius": "rounded-2xl",
+          "padding": "p-8",
+          "border": "border-2 border-purple-500",
+          "textAlign": "text-center"
+        },
+        "answerCard": {
+          "base": {
+            "background": "bg-black/40",
+            "backdropFilter": "backdrop-blur-lg",
+            "borderRadius": "rounded-2xl",
+            "padding": "p-8",
+            "hover": "transform hover:scale-105 transition-transform"
+          },
+        "answerA": {
+            "border": "border-2 border-blue-500",
+            "labelColor": "text-blue-400",
+            "voteColor": "text-blue-400"
+          },
+        "answerB": {
+            "border": "border-2 border-pink-500",
+            "labelColor": "text-pink-400",
+            "voteColor": "text-pink-400"
+          }
+        },
+        "lastLash": {
+          "promptCard": {
+            "border": "border-2 border-purple-500"
+          },
+        "answerCard": {
+            "border": "border-2 border-blue-500"
+          }
+        }
+      },
+      "resultReveal": {
+        "background": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "layout": "flex flex-col items-center justify-center",
+        "container": {
+          "maxWidth": "max-w-5xl",
+          "gap": "space-y-8"
+        },
+        "winnerCard": {
+          "border": "border-yellow-500",
+          "scale": "scale-105",
+          "transition": "transition-all duration-500"
+        },
+        "jokUp": {
+          "fontSize": "text-3xl",
+          "fontWeight": "font-bold",
+          "color": "text-yellow-400",
+          "animation": "animate-pulse"
+        }
+      },
+      "scoreboard": {
+        "background": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "layout": "flex flex-col items-center justify-center",
+        "container": {
+          "maxWidth": "max-w-4xl",
+          "gap": "space-y-8"
+        },
+        "title": {
+          "fontSize": "text-6xl",
+          "fontWeight": "font-bold",
+          "gradient": "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent"
+        },
+        "scoreCard": {
+          "base": {
+            "background": "bg-gradient-to-r",
+            "borderRadius": "rounded-lg",
+            "padding": "p-6",
+            "layout": "flex items-center justify-between",
+            "transition": "transform transition-all duration-300"
+          },
+        "first": {
+            "gradient": "from-yellow-500/30 to-yellow-600/30",
+            "border": "border-2 border-yellow-400",
+            "scale": "scale-105"
+          },
+        "second": {
+            "gradient": "from-gray-400/30 to-gray-500/30",
+            "border": "border-2 border-gray-400"
+          },
+        "third": {
+            "gradient": "from-orange-600/30 to-orange-700/30",
+            "border": "border-2 border-orange-500"
+          },
+        "default": {
+            "gradient": "from-purple-600/30 to-purple-700/30",
+            "border": "border border-purple-400"
+          }
+        }
+      },
+      "finalWinner": {
+        "background": "bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900",
+        "layout": "flex flex-col items-center justify-center",
+        "container": {
+          "maxWidth": "max-w-4xl",
+          "textAlign": "text-center"
+        },
+        "title": {
+          "fontSize": "text-7xl",
+          "fontWeight": "font-bold",
+          "gradient": "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent",
+          "animation": "animate-pulse"
+        },
+        "winnerCard": {
+          "background": "bg-black/40",
+          "backdropFilter": "backdrop-blur-lg",
+          "borderRadius": "rounded-2xl",
+          "padding": "p-12",
+          "border": "border-4 border-yellow-500"
+        },
+        "winnerName": {
+          "fontSize": "text-6xl",
+          "fontWeight": "font-bold",
+          "color": "text-yellow-400"
+        }
+      },
+      "settingsModal": {
+        "overlay": {
+          "background": "bg-black/60",
+          "backdropFilter": "backdrop-blur-sm",
+          "position": "fixed inset-0",
+          "zIndex": "z-50",
+          "layout": "flex items-center justify-center",
+          "padding": "p-4"
+        },
+        "container": {
+          "background": "bg-gray-900",
+          "borderRadius": "rounded-2xl",
+          "padding": "p-8",
+          "maxWidth": "max-w-md",
+          "width": "w-full",
+          "border": "border-2 border-purple-500",
+          "shadow": "shadow-2xl"
+        },
+        "title": {
+          "fontSize": "text-3xl",
+          "fontWeight": "font-bold",
+          "color": "text-white",
+          "textAlign": "text-center",
+          "marginBottom": "mb-6"
+        },
+        "form": {
+          "gap": "space-y-6"
+        },
+        "label": {
+          "display": "block",
+          "color": "text-gray-300",
+          "marginBottom": "mb-3",
+          "fontWeight": "font-semibold",
+          "fontSize": "text-lg"
+        },
+        "slider": {
+          "width": "w-full",
+          "height": "h-3",
+          "background": "bg-gray-700",
+          "borderRadius": "rounded-lg",
+          "appearance": "appearance-none",
+          "accent": "accent-purple-500"
+        },
+        "select": {
+          "width": "w-full",
+          "padding": "px-4 py-3",
+          "background": "bg-gray-800",
+          "border": "border-2 border-purple-500",
+          "borderRadius": "rounded-lg",
+          "color": "text-white",
+          "fontSize": "text-lg",
+          "focus": "focus:outline-none focus:border-yellow-400"
+        }
+      }
+    },
+
+    "designPrinciples": {
+      "visualHierarchy": {
+        "description": "Use size, weight, and color to create clear hierarchy. Largest elements are most important actions.",
+        "rules": [
+          "Primary actions use largest text (30px+) and boldest weight (900)",
+          "Secondary actions use medium text (18px) and medium weight (600)",
+          "Supporting text uses smaller sizes (14-20px) with muted colors",
+          "Hero titles use 64px+ with weight 900",
+          "Section headers use 30-40px with weight 900"
+        ]
+      },
+      "neonAesthetics": {
+        "description": "Neon glow effects are signature to this design. Use strategically for emphasis and interactivity.",
+        "rules": [
+          "Primary glow: rgba(139, 92, 246, 0.35) for general elements",
+          "Accent glow: rgba(34, 211, 238, 0.45) for interactive states",
+          "Hover glow: Increase intensity to 0.7 for active states",
+          "Apply glow to: buttons, logo, main panels, hover states",
+          "Use box-shadow property for glow effects"
+        ]
+      },
+      "glassmorphism": {
+        "description": "Semi-transparent panels with backdrop blur create depth and modern aesthetic.",
+        "rules": [
+          "Panel backgrounds: rgba(25, 15, 60, 0.75) with backdrop-filter: blur(16px)",
+          "Card backgrounds: rgba(255, 255, 255, 0.04) or bg-black/40 for subtle depth",
+          "Always combine transparency with backdrop blur for proper effect",
+          "Use backdrop-blur-lg class for Tailwind",
+          "Modal overlays: bg-black/60 with backdrop-blur-sm"
+        ]
+      },
+      "gradientUsage": {
+        "description": "Gradients add energy and visual interest. Use for primary actions and brand elements.",
+        "rules": [
+          "Primary gradient (purple to cyan): buttons, logo, key interactive elements",
+          "Background gradient (radial): full page backgrounds",
+          "Title gradient (yellow-pink-purple): hero titles and important headings",
+          "Gradients should always flow from purple (#8b5cf6) to cyan (#22d3ee) at 135deg for primary",
+          "Use bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 for titles"
+        ]
+      },
+      "interactivity": {
+        "description": "All interactive elements should provide clear feedback through hover states.",
+        "rules": [
+          "Hover: translateY(-2px to -3px) for lift effect",
+          "Hover: Change border color to accent cyan (#22d3ee)",
+          "Hover: Increase glow intensity",
+          "Hover: scale-105 for cards",
+          "Transitions: 0.12s-0.15s ease for smooth feel",
+          "Use transition-all transform for hover effects"
+        ]
+      },
+      "spacing": {
+        "description": "Generous spacing creates breathing room and premium feel.",
+        "rules": [
+          "Container padding: 48px desktop, 36px tablet, 20px mobile (use clamp for responsive)",
+          "Section gaps: 48px for major sections, 28-32px for related content",
+          "Card padding: 22px minimum for comfortable content",
+          "Button padding: 28px for primary, 22px for secondary",
+          "Use responsive padding: clamp(36px, 5vw, 48px)"
+        ]
+      },
+      "typography": {
+        "description": "Bold, clear typography with strong hierarchy.",
+        "rules": [
+          "Use Inter font family for consistency",
+          "Weight 900 for primary actions and hero text",
+          "Weight 600 for secondary actions and labels",
+          "Uppercase with letter-spacing for taglines",
+          "Line height 1.6 for body text readability",
+          "Use Arial Black for display text in lobby screen",
+          "Use responsive font sizes: clamp(38px, 8vw, 64px)"
+        ]
+      },
+      "colorContrast": {
+        "description": "Maintain high contrast for accessibility while preserving neon aesthetic.",
+        "rules": [
+          "Primary text: #f9fafb on dark backgrounds (high contrast)",
+          "Muted text: #c7d2fe for secondary information",
+          "Interactive elements: Use accent cyan (#22d3ee) for visibility",
+          "Always ensure WCAG AA compliance for text readability",
+          "Error states: red-300 text on red-500/20 background",
+          "Info states: blue-300 text on blue-500/20 background"
+        ]
+      },
+      "responsiveDesign": {
+        "description": "Design scales gracefully from desktop to mobile.",
+        "rules": [
+          "Breakpoint at 1000px: Switch to single column layout",
+          "Breakpoint at 520px: Reduce padding and font sizes",
+          "Breakpoint at 768px (md): Switch grid layouts",
+          "Maintain same visual style across all sizes",
+          "Touch targets: Minimum 44px for mobile interactions",
+          "Use clamp() for responsive sizing: clamp(min, preferred, max)",
+          "Use Tailwind responsive prefixes: md:, lg:"
+        ]
+      },
+      "consistency": {
+        "description": "Maintain consistent patterns across all components.",
+        "rules": [
+          "All cards use same border radius (18px), padding (22px), and hover effects",
+          "All buttons follow primary or secondary button patterns",
+          "All panels use same glassmorphism treatment",
+          "Glow effects use consistent color and intensity patterns",
+          "All timers use same styling (yellow border, large text)",
+          "All modals use same overlay and container styling"
+        ]
+      },
+      "gameStateColors": {
+        "description": "Different game states use specific color schemes for visual distinction.",
+        "rules": [
+          "Lobby: Green theme (#1a4d3a) with diagonal stripes",
+          "Voting: Purple-blue gradient background, blue/pink for answers",
+          "Scoreboard: Purple-blue gradient, yellow/gray/orange for positions",
+          "Timer: Yellow border and text, red when <= 10 seconds",
+          "Winner: Yellow emphasis with strong glow",
+          "Error: Red theme, Info: Blue theme"
+        ]
+      }
+    },
+
+    "usageGuidelines": {
+      "whenToUseGradients": [
+        "Primary action buttons (Start Game, Submit, Join, etc.)",
+        "Logo and brand elements",
+        "Hero titles and important headings",
+        "Key interactive elements that need emphasis"
+      ],
+      "whenToUseGlow": [
+        "All interactive elements (buttons, cards, menu items)",
+        "Logo and brand elements",
+        "Main container panels",
+        "Hover states (increased intensity)",
+        "Timer displays"
+      ],
+      "whenToUseGlassmorphism": [
+        "Main application containers",
+        "Modal overlays and dialogs",
+        "Card components",
+        "Settings panels",
+        "Game state screens (voting, results, scoreboard)"
+      ],
+      "whenToUseBoldTypography": [
+        "Primary action buttons",
+        "Hero headings and titles",
+        "Brand name and taglines",
+        "Timer displays",
+        "Score numbers"
+      ],
+      "colorSelection": {
+        "primary": "Use neon purple (#8b5cf6) for main brand elements and borders",
+        "accent": "Use cyan (#22d3ee) for highlights, hover states, and interactive feedback",
+        "background": "Always use dark gradient background for depth",
+        "text": "Use white (#f9fafb) for primary text, muted purple (#c7d2fe) for secondary",
+        "gameStates": "Use state-specific colors: green for lobby, yellow for timers/winners, blue/pink for voting answers"
+      },
+      "componentSelection": {
+        "startScreen": "Use for main entry point - glassmorphic panel with brand and actions",
+        "lobby": "Use green theme with circular player layout for waiting room",
+        "gameScreens": "Use purple-blue gradient background with glassmorphic cards",
+        "modals": "Use black overlay with glassmorphic container",
+        "forms": "Use dark inputs with purple borders, yellow focus"
+      }
+    },
+
+    "accessibility": {
+      "contrast": {
+        "minimum": "WCAG AA",
+        "primaryText": "High contrast white (#f9fafb) on dark backgrounds",
+        "interactiveElements": "Clear visual feedback on hover/focus",
+        "description": "Maintain readability while preserving neon aesthetic"
+      },
+      "focusStates": {
+        "description": "All interactive elements must have visible focus indicators",
+        "style": "Use accent cyan glow or yellow border for focus states",
+        "example": "focus:border-yellow-400 for inputs, focus:outline-none with custom glow for buttons"
+      },
+      "touchTargets": {
+        "minimum": "44px x 44px",
+        "description": "Ensure all interactive elements meet minimum touch target size on mobile",
+        "buttonPadding": "Use at least 20px padding on mobile for buttons"
+      },
+      "animations": {
+        "description": "Animations should be subtle and not cause motion sickness",
+        "duration": "Keep transitions under 0.3s for most interactions",
+        "reducedMotion": "Consider prefers-reduced-motion for accessibility"
+      }
+    },
+
+    "implementationNotes": {
+      "tailwind": {
+        "description": "Project uses Tailwind CSS with custom configuration",
+        "customColors": "primary: #6366f1, secondary: #8b5cf6 (defined in tailwind.config.js)",
+        "usage": "Prefer inline styles for complex gradients and glows, use Tailwind classes for spacing, layout, and simple colors"
+      },
+      "responsivePatterns": {
+        "clamp": "Use clamp() for responsive sizing: clamp(36px, 5vw, 48px)",
+        "tailwindBreakpoints": "Use md: and lg: prefixes for responsive design",
+        "grid": "Use flex-col md:grid md:grid-cols-[1.2fr_1fr] for responsive grids"
+      },
+      "animations": {
+        "fadeIn": "Custom animation defined in globals.css: @keyframes fade-in",
+        "pulse": "Use Tailwind animate-pulse for pulsing effects",
+        "transitions": "Use transition-all for comprehensive transitions"
+      },
+      "stateManagement": {
+        "description": "Game states determine visual styling",
+        "examples": [
+          "LOBBY: Green theme",
+          "VOTING: Purple-blue gradient with colored answer cards",
+          "SCOREBOARD: Position-based color coding",
+          "TIMER: Yellow normal, red when <= 10"
+        ]
+      }
+    },
+
+    "examples": {
+      "primaryButton": {
+        "description": "Start Game button on main screen",
+        "styles": {
+          "padding": "clamp(20px, 2.5vw, 28px)",
+          "borderRadius": "18px",
+          "background": "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+          "fontSize": "clamp(22px, 3vw, 30px)",
+          "fontWeight": 900,
+          "boxShadow": "0 0 40px rgba(34, 211, 238, 0.45)",
+          "hover": {
+            "transform": "translateY(-3px)",
+            "boxShadow": "0 0 60px rgba(34, 211, 238, 0.7)"
+          }
+        }
+      },
+      "glassmorphicCard": {
+        "description": "Menu card on start screen",
+        "styles": {
+          "background": "rgba(255, 255, 255, 0.04)",
+          "borderRadius": "18px",
+          "padding": "22px",
+          "border": "1px solid rgba(139, 92, 246, 0.35)",
+          "hover": {
+            "transform": "translateY(-2px)",
+            "borderColor": "#22d3ee",
+            "boxShadow": "0 0 25px rgba(34, 211, 238, 0.35)"
+          }
+        }
+      },
+      "timerDisplay": {
+        "description": "Timer in voting/answering phases",
+        "styles": {
+          "container": "bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 border-yellow-500 text-center",
+          "label": "text-2xl text-gray-300 mb-4",
+          "value": "text-9xl font-bold text-yellow-400 (or text-red-400 animate-pulse when <= 10)"
+        }
+      },
+      "answerCard": {
+        "description": "Answer card in voting phase",
+        "styles": {
+          "base": "bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2",
+          "answerA": "border-blue-500 text-blue-400",
+          "answerB": "border-pink-500 text-pink-400",
+          "hover": "transform hover:scale-105 transition-transform"
+        }
+      }
+    }
+  }
+}
+

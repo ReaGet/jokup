@@ -230,8 +230,23 @@ export default function MainScreen() {
   if (!connected) {
     return (
       <TranslationProvider language={settings.language}>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-          <div className="text-2xl text-gray-300">Connecting to server...</div>
+        <div 
+          className="min-h-screen flex items-center justify-center"
+          style={{
+            background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)',
+            fontFamily: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif'
+          }}
+        >
+          <div 
+            className="text-center"
+            style={{
+              fontSize: '20px',
+              color: '#c7d2fe',
+              lineHeight: 1.6
+            }}
+          >
+            Connecting to server...
+          </div>
         </div>
       </TranslationProvider>
     )
