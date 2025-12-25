@@ -69,13 +69,13 @@ export default function ResultReveal({ results, isLastLash }) {
     }, [])
     
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-8">
-        <div className="max-w-5xl w-full space-y-6">
-          <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 border-purple-500 text-center">
-            <h2 className="text-4xl font-bold mb-2">Last Lash Results</h2>
-            <p className="text-xl text-gray-300">{results?.prompt}</p>
+      <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <div className="max-w-5xl w-full space-y-[28px]">
+          <div className="bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-[48px] border border-[rgba(139,92,246,0.35)] text-center shadow-[0_0_40px_rgba(139,92,246,0.35)]">
+            <h2 className="text-[38px] font-black mb-2 text-[#f9fafb]">Last Lash Results</h2>
+            <p className="text-[20px] text-[#c7d2fe]">{results?.prompt}</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[28px]">
             {entries.map((entry, idx) => {
               const placeCounts = entry.placeCounts || { first: 0, second: 0, third: 0 }
               const totalPoints = entry.totalPoints || 0
@@ -83,32 +83,34 @@ export default function ResultReveal({ results, isLastLash }) {
               return (
                 <div
                   key={entry.playerId || idx}
-                  className={`bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 transition-all duration-500 ${
-                    showAllScores && totalPoints > 0 ? 'border-yellow-500' : 'border-blue-500'
+                  className={`bg-[rgba(255,255,255,0.04)] backdrop-blur-[16px] rounded-[18px] p-[22px] border transition-all duration-[0.15s] ease-in-out hover:translate-y-[-2px] hover:border-[#22d3ee] hover:shadow-[0_0_25px_rgba(34,211,238,0.35)] ${
+                    showAllScores && totalPoints > 0 
+                      ? 'border-[#22d3ee] shadow-[0_0_25px_rgba(34,211,238,0.35)]' 
+                      : 'border-[rgba(139,92,246,0.35)] shadow-[0_0_25px_rgba(139,92,246,0.35)]'
                   }`}
                 >
-                  <div className="text-lg text-gray-400 mb-2">{entry.playerName}</div>
-                  <div className="text-xl text-gray-200 min-h-[80px]">{entry.answer}</div>
+                  <div className="text-[18px] text-[#c7d2fe] mb-2 font-semibold">{entry.playerName}</div>
+                  <div className="text-[20px] text-[#f9fafb] min-h-[80px]">{entry.answer}</div>
                   
                   {/* Show places progressively */}
                   <div className="mt-3 space-y-2">
                     {showFirstPlace && placeCounts.first > 0 && (
-                      <div className="text-2xl font-bold text-yellow-400 animate-fade-in">
+                      <div className="text-[22px] font-black text-[#22d3ee] animate-fade-in">
                         🥇 {placeCounts.first} first place{placeCounts.first > 1 ? 's' : ''}
                       </div>
                     )}
                     {showSecondPlace && placeCounts.second > 0 && (
-                      <div className="text-2xl font-bold text-gray-300 animate-fade-in">
+                      <div className="text-[22px] font-black text-[#c7d2fe] animate-fade-in">
                         🥈 {placeCounts.second} second place{placeCounts.second > 1 ? 's' : ''}
                       </div>
                     )}
                     {showThirdPlace && placeCounts.third > 0 && (
-                      <div className="text-2xl font-bold text-orange-400 animate-fade-in">
+                      <div className="text-[22px] font-black text-[#8b5cf6] animate-fade-in">
                         🥉 {placeCounts.third} third place{placeCounts.third > 1 ? 's' : ''}
                       </div>
                     )}
                     {showAllScores && (
-                      <div className="text-3xl font-bold text-yellow-400 mt-2 animate-fade-in">
+                      <div className="text-[30px] font-black text-[#22d3ee] mt-2 animate-fade-in">
                         {totalPoints} points
                       </div>
                     )}
@@ -123,72 +125,76 @@ export default function ResultReveal({ results, isLastLash }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-8">
-      <div className="max-w-5xl w-full space-y-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <div className="max-w-5xl w-full space-y-[48px]">
         {/* Prompt */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 border-purple-500 text-center">
-          <h2 className="text-4xl font-bold">{results.prompt}</h2>
+        <div className="bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-[48px] border border-[rgba(139,92,246,0.35)] text-center shadow-[0_0_40px_rgba(139,92,246,0.35)]">
+          <h2 className="text-[38px] font-black text-[#f9fafb]">{results.prompt}</h2>
         </div>
 
         {/* Answers with Reveal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-[28px]">
           {/* Answer A */}
-          <div className={`bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 transition-all duration-500 ${
-            results.voteCounts.A > results.voteCounts.B ? 'border-yellow-500 scale-105' : 'border-blue-500'
+          <div className={`bg-[rgba(255,255,255,0.04)] backdrop-blur-[16px] rounded-[18px] p-[22px] border transition-all duration-[0.15s] ease-in-out hover:translate-y-[-2px] hover:shadow-[0_0_25px_rgba(34,211,238,0.35)] ${
+            results.voteCounts.A > results.voteCounts.B 
+              ? 'border-[#22d3ee] scale-105 shadow-[0_0_25px_rgba(34,211,238,0.35)]' 
+              : 'border-[rgba(139,92,246,0.35)] shadow-[0_0_25px_rgba(139,92,246,0.35)]'
           }`}>
-            <div className="text-2xl font-bold text-blue-400 mb-4">Answer A</div>
-            <div className="text-xl text-gray-200 mb-4 min-h-[100px] flex items-center justify-center">
+            <div className="text-[22px] font-black text-[#22d3ee] mb-4">Answer A</div>
+            <div className="text-[20px] text-[#f9fafb] mb-4 min-h-[100px] flex items-center justify-center">
               {results.answerA}
             </div>
             {showVotes && (
-              <div className="text-4xl font-bold text-blue-400 text-center mb-2">
+              <div className="text-[38px] font-black text-[#22d3ee] text-center mb-2">
                 {animatedVotes.A} votes
               </div>
             )}
             {showAuthors && (
               <div className="text-center mt-4">
-                <div className="text-lg text-gray-400">Written by</div>
-                <div className="text-2xl font-bold text-blue-300">{results.authorA}</div>
+                <div className="text-[18px] text-[#c7d2fe]">Written by</div>
+                <div className="text-[22px] font-black text-[#22d3ee]">{results.authorA}</div>
                 {results.scores && results.scores[results.players?.[0]] && (
-                  <div className="text-xl text-yellow-400 mt-2">
+                  <div className="text-[20px] text-[#22d3ee] mt-2 font-black">
                     +{results.scores[results.players[0]]} points
                   </div>
                 )}
               </div>
             )}
             {results.isJokUp && results.jokUpPlayer === results.authorA && (
-              <div className="text-center mt-4 text-3xl font-bold text-yellow-400 animate-pulse">
+              <div className="text-center mt-4 text-[30px] font-black text-[#22d3ee] animate-pulse">
                 JOKUP! 🎉
               </div>
             )}
           </div>
 
           {/* Answer B */}
-          <div className={`bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 transition-all duration-500 ${
-            results.voteCounts.B > results.voteCounts.A ? 'border-yellow-500 scale-105' : 'border-pink-500'
+          <div className={`bg-[rgba(255,255,255,0.04)] backdrop-blur-[16px] rounded-[18px] p-[22px] border transition-all duration-[0.15s] ease-in-out hover:translate-y-[-2px] hover:shadow-[0_0_25px_rgba(34,211,238,0.35)] ${
+            results.voteCounts.B > results.voteCounts.A 
+              ? 'border-[#22d3ee] scale-105 shadow-[0_0_25px_rgba(34,211,238,0.35)]' 
+              : 'border-[rgba(139,92,246,0.35)] shadow-[0_0_25px_rgba(139,92,246,0.35)]'
           }`}>
-            <div className="text-2xl font-bold text-pink-400 mb-4">Answer B</div>
-            <div className="text-xl text-gray-200 mb-4 min-h-[100px] flex items-center justify-center">
+            <div className="text-[22px] font-black text-[#8b5cf6] mb-4">Answer B</div>
+            <div className="text-[20px] text-[#f9fafb] mb-4 min-h-[100px] flex items-center justify-center">
               {results.answerB}
             </div>
             {showVotes && (
-              <div className="text-4xl font-bold text-pink-400 text-center mb-2">
+              <div className="text-[38px] font-black text-[#8b5cf6] text-center mb-2">
                 {animatedVotes.B} votes
               </div>
             )}
             {showAuthors && (
               <div className="text-center mt-4">
-                <div className="text-lg text-gray-400">Written by</div>
-                <div className="text-2xl font-bold text-pink-300">{results.authorB}</div>
+                <div className="text-[18px] text-[#c7d2fe]">Written by</div>
+                <div className="text-[22px] font-black text-[#8b5cf6]">{results.authorB}</div>
                 {results.scores && results.scores[results.players?.[1]] && (
-                  <div className="text-xl text-yellow-400 mt-2">
+                  <div className="text-[20px] text-[#22d3ee] mt-2 font-black">
                     +{results.scores[results.players[1]]} points
                   </div>
                 )}
               </div>
             )}
             {results.isJokUp && results.jokUpPlayer === results.authorB && (
-              <div className="text-center mt-4 text-3xl font-bold text-yellow-400 animate-pulse">
+              <div className="text-center mt-4 text-[30px] font-black text-[#22d3ee] animate-pulse">
                 JOKUP! 🎉
               </div>
             )}

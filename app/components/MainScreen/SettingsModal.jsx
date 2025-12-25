@@ -98,15 +98,15 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 rounded-2xl p-8 max-w-md w-full border-2 border-purple-500 shadow-2xl">
-        <h2 className="text-3xl font-bold mb-6 text-white text-center">
+      <div className="bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-12 max-w-md w-full border border-[rgba(139,92,246,0.35)] shadow-[0_0_40px_rgba(139,92,246,0.35)]">
+        <h2 className="text-[30px] font-black mb-8 text-[#f9fafb] text-center">
           {t('ui.settings')}
         </h2>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Volume Setting */}
           <div>
-            <label className="block text-gray-300 mb-3 font-semibold text-lg">
+            <label className="block text-[#c7d2fe] mb-4 font-semibold text-lg">
               {t('ui.volume')}: {volume}%
             </label>
             <input
@@ -115,19 +115,19 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
               max="100"
               value={volume}
               onChange={(e) => setVolume(Number(e.target.value))}
-              className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              className="w-full h-3 bg-[rgba(255,255,255,0.04)] rounded-[18px] appearance-none cursor-pointer accent-[#8b5cf6]"
             />
           </div>
 
           {/* Language Setting */}
           <div>
-            <label className="block text-gray-300 mb-3 font-semibold text-lg">
+            <label className="block text-[#c7d2fe] mb-4 font-semibold text-lg">
               {t('ui.language')}
             </label>
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-800 border-2 border-purple-500 rounded-lg text-white text-lg focus:outline-none focus:border-yellow-400"
+              className="w-full px-4 py-[22px] bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.35)] rounded-[18px] text-[#f9fafb] text-lg focus:outline-none focus:border-[#22d3ee] focus:shadow-[0_0_25px_rgba(34,211,238,0.35)] transition-all duration-[150ms] ease"
             >
               <option value="en">{t('ui.english')}</option>
               <option value="ru">{t('ui.russian')}</option>
@@ -139,7 +139,7 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
         <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-all"
+            className="px-7 py-[22px] bg-gradient-to-r from-[#8b5cf6] to-[#22d3ee] hover:-translate-y-[2px] text-[#f9fafb] font-black rounded-[18px] transition-all duration-[150ms] ease shadow-[0_0_40px_rgba(34,211,238,0.45)] hover:shadow-[0_0_60px_rgba(34,211,238,0.7)]"
           >
             Close
           </button>

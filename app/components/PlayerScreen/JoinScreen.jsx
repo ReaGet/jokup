@@ -78,18 +78,38 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
   const displayError = (isAutoRejoining ? '' : serverError) || error
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-      <div className="w-full max-w-md bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 border-purple-500">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 md:p-12"
+      style={{
+        background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)'
+      }}
+    >
+      <div 
+        className="w-full max-w-md rounded-[28px] p-12 md:p-12 border border-[rgba(139,92,246,0.35)]"
+        style={{
+          background: 'rgba(25, 15, 60, 0.75)',
+          backdropFilter: 'blur(16px)',
+          boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)'
+        }}
+      >
+        <div className="text-center mb-12">
+          <h1 
+            className="text-[38px] md:text-[64px] font-black mb-4 tracking-[1px] bg-clip-text text-transparent"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, #8b5cf6, #22d3ee)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              textShadow: '0 0 40px rgba(139, 92, 246, 0.6)'
+            }}
+          >
             JOKUP
           </h1>
-          <p className="text-gray-300">{t('ui.enterRoomCode')}</p>
+          <p className="text-[#c7d2fe] text-lg">{t('ui.enterRoomCode')}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-7">
           <div>
-            <label className="block text-gray-300 mb-2 font-semibold">
+            <label className="block text-[#c7d2fe] mb-2 font-semibold text-lg">
               {t('ui.roomCode')}
             </label>
             <input
@@ -106,14 +126,26 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
                   onErrorClear()
                 }
               }}
-              className="w-full px-4 py-3 bg-gray-800 border-2 border-purple-500 rounded-lg text-white text-2xl text-center font-bold tracking-widest uppercase focus:outline-none focus:border-yellow-400"
+              className="w-full px-4 py-3 rounded-[18px] text-[#f9fafb] text-2xl text-center font-bold tracking-widest uppercase focus:outline-none transition-all duration-150"
+              style={{
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(139, 92, 246, 0.35)'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#22d3ee'
+                e.target.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(139, 92, 246, 0.35)'
+                e.target.style.boxShadow = 'none'
+              }}
               placeholder="ABCD"
               maxLength={4}
             />
           </div>
 
           <div>
-            <label className="block text-gray-300 mb-2 font-semibold">
+            <label className="block text-[#c7d2fe] mb-2 font-semibold text-lg">
               {t('ui.yourName')}
             </label>
             <input
@@ -130,20 +162,45 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
                   onErrorClear()
                 }
               }}
-              className="w-full px-4 py-3 bg-gray-800 border-2 border-purple-500 rounded-lg text-white text-lg focus:outline-none focus:border-yellow-400"
+              className="w-full px-4 py-3 rounded-[18px] text-[#f9fafb] text-lg focus:outline-none transition-all duration-150"
+              style={{
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(139, 92, 246, 0.35)'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#22d3ee'
+                e.target.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(139, 92, 246, 0.35)'
+                e.target.style.boxShadow = 'none'
+              }}
               placeholder="Enter your name"
               maxLength={20}
             />
           </div>
 
           {isRejoining && (
-            <div className="bg-blue-500/20 border-2 border-blue-500 rounded-lg p-3 text-blue-300 text-center">
+            <div 
+              className="rounded-[18px] p-3 text-center text-[#22d3ee]"
+              style={{
+                background: 'rgba(34, 211, 238, 0.1)',
+                border: '1px solid rgba(34, 211, 238, 0.35)',
+                boxShadow: '0 0 25px rgba(34, 211, 238, 0.35)'
+              }}
+            >
               {t('ui.rejoiningGame')}
             </div>
           )}
 
           {displayError && (
-            <div className="bg-red-500/20 border-2 border-red-500 rounded-lg p-3 text-red-300 text-center">
+            <div 
+              className="rounded-[18px] p-3 text-center text-red-300"
+              style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.5)'
+              }}
+            >
               {displayError}
             </div>
           )}
@@ -151,7 +208,23 @@ export default function JoinScreen({ onJoin, isRejoining = false, isAutoRejoinin
           <button
             type="submit"
             disabled={isRejoining}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg text-xl transition-all transform hover:scale-105"
+            className="w-full text-[#f9fafb] font-black py-7 rounded-[18px] text-[30px] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              background: isRejoining 
+                ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(34, 211, 238, 0.5))'
+                : 'linear-gradient(135deg, #8b5cf6, #22d3ee)',
+              boxShadow: '0 0 40px rgba(34, 211, 238, 0.45)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isRejoining) {
+                e.target.style.transform = 'translateY(-3px)'
+                e.target.style.boxShadow = '0 0 60px rgba(34, 211, 238, 0.7)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)'
+              e.target.style.boxShadow = '0 0 40px rgba(34, 211, 238, 0.45)'
+            }}
           >
             {isRejoining ? t('ui.rejoining') : t('ui.joinGame')}
           </button>

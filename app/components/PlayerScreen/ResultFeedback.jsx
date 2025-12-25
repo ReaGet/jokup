@@ -4,17 +4,17 @@ export default function ResultFeedback({ results, playerId, isLastLash }) {
   if (isLastLash) {
     const playerResult = Array.isArray(results) ? results.find(r => r.playerId === playerId) : null
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-        <div className="w-full max-w-md bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 border-purple-500 text-center space-y-6">
-          <h2 className="text-3xl font-bold">Last Lash Results</h2>
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <div className="w-full max-w-md bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-[48px] border border-[rgba(139,92,246,0.35)] text-center space-y-[28px] shadow-[0_0_40px_rgba(139,92,246,0.35)]">
+          <h2 className="text-[30px] font-black text-[#f9fafb]">Last Lash Results</h2>
           {playerResult ? (
             <div>
-              <div className="text-2xl text-gray-300 mb-2">Your answer earned</div>
-              <div className="text-5xl font-bold text-yellow-400">{playerResult.votes || 0}</div>
-              <div className="text-xl text-gray-400 mt-2">votes</div>
+              <div className="text-[20px] text-[#c7d2fe] mb-2">Your answer earned</div>
+              <div className="text-[64px] font-black text-[#22d3ee]">{playerResult.votes || 0}</div>
+              <div className="text-[20px] text-[#c7d2fe] mt-2">votes</div>
             </div>
           ) : (
-            <div className="text-xl text-gray-300">Loading results...</div>
+            <div className="text-[20px] text-[#c7d2fe]">Loading results...</div>
           )}
         </div>
       </div>
@@ -32,31 +32,31 @@ export default function ResultFeedback({ results, playerId, isLastLash }) {
   if (!isPlayerA && !isPlayerB) {
     // Player wasn't in this match-up
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-        <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-blue-500 text-center">
-          <div className="text-xl text-gray-300">You voted for the winner!</div>
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <div className="bg-[rgba(255,255,255,0.04)] backdrop-blur-[16px] rounded-[18px] p-[22px] border border-[rgba(139,92,246,0.35)] text-center shadow-[0_0_25px_rgba(139,92,246,0.35)]">
+          <div className="text-[20px] text-[#c7d2fe]">You voted for the winner!</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-      <div className="w-full max-w-md bg-black/40 backdrop-blur-lg rounded-2xl p-8 border-2 border-purple-500 text-center space-y-6">
-        <h2 className="text-3xl font-bold">Your Result</h2>
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <div className="w-full max-w-md bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-[48px] border border-[rgba(139,92,246,0.35)] text-center space-y-[28px] shadow-[0_0_40px_rgba(139,92,246,0.35)]">
+        <h2 className="text-[30px] font-black text-[#f9fafb]">Your Result</h2>
         <div>
-          <div className="text-2xl text-gray-300 mb-2">Your answer earned</div>
-          <div className="text-5xl font-bold text-yellow-400">{playerVotes}</div>
-          <div className="text-xl text-gray-400 mt-2">votes</div>
+          <div className="text-[20px] text-[#c7d2fe] mb-2">Your answer earned</div>
+          <div className="text-[64px] font-black text-[#22d3ee]">{playerVotes}</div>
+          <div className="text-[20px] text-[#c7d2fe] mt-2">votes</div>
         </div>
         {isJokUp && (
-          <div className="bg-yellow-500/20 border-2 border-yellow-400 rounded-lg p-4">
-            <div className="text-3xl font-bold text-yellow-400 animate-pulse">JOKUP! 🎉</div>
-            <div className="text-lg text-gray-300 mt-2">Unanimous win!</div>
+          <div className="bg-[rgba(34,211,238,0.2)] border border-[#22d3ee] rounded-[18px] p-[22px] shadow-[0_0_25px_rgba(34,211,238,0.35)]">
+            <div className="text-[30px] font-black text-[#22d3ee] animate-pulse">JOKUP! 🎉</div>
+            <div className="text-[18px] text-[#c7d2fe] mt-2">Unanimous win!</div>
           </div>
         )}
         {isWinner && !isJokUp && (
-          <div className="text-xl text-green-400 font-semibold">You won this match-up!</div>
+          <div className="text-[20px] text-[#22d3ee] font-semibold">You won this match-up!</div>
         )}
       </div>
     </div>

@@ -12,15 +12,22 @@ export default function GameIntro() {
   }, [])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
       <div className={`text-center space-y-8 transition-opacity duration-1000 ${showText ? 'opacity-100' : 'opacity-0'}`}>
-        <h1 className="text-6xl font-bold mb-8 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent animate-pulse">
+        <h1 className="text-6xl md:text-7xl font-black mb-8 bg-clip-text text-transparent animate-pulse" style={{
+          background: 'linear-gradient(135deg, #8b5cf6, #22d3ee)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          fontFamily: 'Inter, system-ui, sans-serif',
+          letterSpacing: '1px'
+        }}>
           {t('ui.startingGame')}
         </h1>
       </div>
     </div>
   )
 }
+
 
 
 

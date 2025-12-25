@@ -99,29 +99,42 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
     const placeLabels = { 1: '🥇 1st', 2: '🥈 2nd', 3: '🥉 3rd' }
     
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-        <div className="w-full max-w-2xl space-y-6">
+      <div className="min-h-screen flex flex-col items-center justify-center p-5 md:p-9 lg:p-12" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <div className="w-full max-w-2xl space-y-7">
           {/* Timer */}
-          <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-yellow-500 text-center">
-            <div className="text-sm text-gray-300 mb-2">Time Remaining</div>
-            <div className={`text-6xl font-bold ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : 'text-yellow-400'}`}>
+          <div className="text-center rounded-[28px] p-6 md:p-8 border" style={{ 
+            background: 'rgba(25, 15, 60, 0.75)', 
+            backdropFilter: 'blur(16px)',
+            borderColor: 'rgba(139, 92, 246, 0.35)',
+            boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)'
+          }}>
+            <div className="text-sm mb-2" style={{ color: '#c7d2fe' }}>Time Remaining</div>
+            <div className={`text-6xl font-black ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : ''}`} style={{ 
+              color: timeRemaining <= 10 ? undefined : '#22d3ee',
+              fontFamily: 'Inter, system-ui, sans-serif'
+            }}>
               {timeRemaining}
             </div>
           </div>
           
-          <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-purple-500 text-center">
-            <h2 className="text-2xl font-bold mb-4">The Last Lash</h2>
-            <p className="text-lg text-gray-300">{currentMatchUp?.prompt || 'Vote for your favorites!'}</p>
-            <p className="text-sm text-gray-400 mt-2">
+          <div className="text-center rounded-[28px] p-6 md:p-8 border" style={{ 
+            background: 'rgba(25, 15, 60, 0.75)', 
+            backdropFilter: 'blur(16px)',
+            borderColor: 'rgba(139, 92, 246, 0.35)',
+            boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)'
+          }}>
+            <h2 className="text-3xl font-black mb-4" style={{ color: '#f9fafb', fontFamily: 'Inter, system-ui, sans-serif' }}>The Last Lash</h2>
+            <p className="text-lg mb-2" style={{ color: '#f9fafb', fontFamily: 'Inter, system-ui, sans-serif' }}>{currentMatchUp?.prompt || 'Vote for your favorites!'}</p>
+            <p className="text-sm mt-2" style={{ color: '#c7d2fe', fontFamily: 'Inter, system-ui, sans-serif' }}>
               Click on your top {requiredSelections} answer{requiredSelections > 1 ? 's' : ''}: 1st click = 1st place{requiredSelections > 1 ? `, 2nd click = 2nd place${requiredSelections > 2 ? ', 3rd click = 3rd place' : ''}` : ''}
             </p>
             {selectedCount > 0 && (
-              <p className="text-xs text-yellow-400 mt-2">
+              <p className="text-xs mt-2" style={{ color: '#22d3ee', fontFamily: 'Inter, system-ui, sans-serif' }}>
                 Selected: {selectedCount} of {requiredSelections}
               </p>
             )}
             {totalPlayers > 0 && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs mt-1" style={{ color: '#c7d2fe', fontFamily: 'Inter, system-ui, sans-serif' }}>
                 {votersCount} of {totalPlayers} players voted
               </p>
             )}
@@ -141,22 +154,54 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
                   <button
                     onClick={() => !voted && !isTimerExpired && handleLastLashVote(answerIndex)}
                     disabled={voted || isTimerExpired || isSelected}
-                    className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                    className={`w-full p-5 rounded-[18px] border text-left transition-all duration-150 ${
                       isTimerExpired || voted
-                        ? 'bg-gray-700/50 border-gray-600 text-gray-500 cursor-not-allowed'
+                        ? 'cursor-not-allowed'
+                        : isSelected
+                        ? ''
+                        : 'hover:-translate-y-1'
+                    }`}
+                    style={{
+                      background: isTimerExpired || voted 
+                        ? 'rgba(255, 255, 255, 0.02)' 
                         : isSelected
                         ? place === 1
-                          ? 'bg-yellow-500/40 border-yellow-400'
+                          ? 'rgba(255, 215, 0, 0.2)'
                           : place === 2
-                          ? 'bg-gray-400/40 border-gray-300'
-                          : 'bg-orange-600/40 border-orange-500'
-                        : 'bg-black/40 border-purple-500 hover:border-yellow-400 hover:scale-105'
-                    }`}
+                          ? 'rgba(192, 192, 192, 0.2)'
+                          : 'rgba(205, 127, 50, 0.2)'
+                        : 'rgba(255, 255, 255, 0.04)',
+                      backdropFilter: 'blur(16px)',
+                      borderColor: isTimerExpired || voted
+                        ? 'rgba(139, 92, 246, 0.2)'
+                        : isSelected
+                        ? place === 1
+                          ? '#ffd700'
+                          : place === 2
+                          ? '#c0c0c0'
+                          : '#cd7f32'
+                        : 'rgba(139, 92, 246, 0.35)',
+                      color: isTimerExpired || voted ? '#c7d2fe' : '#f9fafb',
+                      boxShadow: !isTimerExpired && !voted && !isSelected ? '0 0 25px rgba(34, 211, 238, 0.35)' : 'none',
+                      fontFamily: 'Inter, system-ui, sans-serif'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!voted && !isTimerExpired && !isSelected) {
+                        e.currentTarget.style.borderColor = '#22d3ee'
+                        e.currentTarget.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!voted && !isTimerExpired && !isSelected) {
+                        e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.35)'
+                        e.currentTarget.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
+                      }
+                    }}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-lg flex-1">{answer.answer}</span>
+                      <span className="text-lg flex-1 font-semibold">{answer.answer}</span>
                       {isSelected && (
-                        <span className="text-xl font-bold ml-2">{placeLabels[place]}</span>
+                        <span className="text-xl font-black ml-2">{placeLabels[place]}</span>
                       )}
                     </div>
                   </button>
@@ -166,33 +211,55 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
           </div>
 
           {isTimerExpired ? (
-            <div className="w-full bg-red-500/20 border-2 border-red-500 rounded-lg p-4 text-center text-red-300">
-              Time's up! Voting has ended.
+            <div className="w-full rounded-[18px] p-5 text-center border" style={{ 
+              background: 'rgba(255, 0, 0, 0.1)', 
+              borderColor: 'rgba(255, 0, 0, 0.5)',
+              color: '#f9fafb',
+              fontFamily: 'Inter, system-ui, sans-serif'
+            }}>
+              <div className="font-semibold">Time's up! Voting has ended.</div>
               {selectedCount > 0 && !voted && (
-                <p className="text-xs mt-2">Your {selectedCount} selected answer{selectedCount > 1 ? 's' : ''} {selectedCount === 1 ? 'has' : 'have'} been submitted.</p>
+                <p className="text-xs mt-2" style={{ color: '#c7d2fe' }}>Your {selectedCount} selected answer{selectedCount > 1 ? 's' : ''} {selectedCount === 1 ? 'has' : 'have'} been submitted.</p>
               )}
             </div>
           ) : voted ? (
             <div className="space-y-2">
-              <div className="bg-green-500/20 border-2 border-green-500 rounded-lg p-4 text-center text-green-300">
-                Votes submitted! Waiting for other players...
+              <div className="rounded-[18px] p-5 text-center border" style={{ 
+                background: 'rgba(0, 255, 0, 0.1)', 
+                borderColor: 'rgba(0, 255, 0, 0.5)',
+                color: '#f9fafb',
+                fontFamily: 'Inter, system-ui, sans-serif'
+              }}>
+                <div className="font-semibold">Votes submitted! Waiting for other players...</div>
               </div>
               {totalPlayers > 0 && (
-                <div className="bg-blue-500/20 border-2 border-blue-500 rounded-lg p-3 text-center">
-                  <div className="text-sm text-blue-300">
+                <div className="rounded-[18px] p-4 text-center border" style={{ 
+                  background: 'rgba(34, 211, 238, 0.1)', 
+                  borderColor: 'rgba(34, 211, 238, 0.35)',
+                  fontFamily: 'Inter, system-ui, sans-serif'
+                }}>
+                  <div className="text-sm mb-2" style={{ color: '#22d3ee' }}>
                     {votersCount} of {totalPlayers} players voted
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                  <div className="w-full rounded-full h-2 mt-2" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
                     <div 
-                      className="bg-blue-500 h-2 rounded-full transition-all"
-                      style={{ width: `${(votersCount / totalPlayers) * 100}%` }}
+                      className="h-2 rounded-full transition-all"
+                      style={{ 
+                        width: `${(votersCount / totalPlayers) * 100}%`,
+                        background: 'linear-gradient(135deg, #8b5cf6, #22d3ee)'
+                      }}
                     />
                   </div>
                 </div>
               )}
             </div>
           ) : selectedCount < requiredSelections && (
-            <div className="w-full bg-blue-500/20 border-2 border-blue-500 rounded-lg p-4 text-center text-blue-300">
+            <div className="w-full rounded-[18px] p-5 text-center border" style={{ 
+              background: 'rgba(34, 211, 238, 0.1)', 
+              borderColor: 'rgba(34, 211, 238, 0.35)',
+              color: '#22d3ee',
+              fontFamily: 'Inter, system-ui, sans-serif'
+            }}>
               Select {requiredSelections - selectedCount} more answer{requiredSelections - selectedCount > 1 ? 's' : ''} to complete your vote
             </div>
           )}
@@ -204,9 +271,16 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
   // Regular match-up voting
   if (!currentMatchUp) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-        <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-yellow-500 text-center">
-          <div className="text-xl text-yellow-400">Loading match-up...</div>
+      <div className="min-h-screen flex items-center justify-center p-5 md:p-9 lg:p-12" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <div className="rounded-[28px] p-6 md:p-8 border text-center" style={{ 
+          background: 'rgba(25, 15, 60, 0.75)', 
+          backdropFilter: 'blur(16px)',
+          borderColor: 'rgba(139, 92, 246, 0.35)',
+          boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)',
+          color: '#22d3ee',
+          fontFamily: 'Inter, system-ui, sans-serif'
+        }}>
+          <div className="text-xl font-semibold">Loading match-up...</div>
         </div>
       </div>
     )
@@ -214,71 +288,146 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
 
   if (isAuthor) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-        <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-yellow-500 text-center">
-          <div className="text-xl text-yellow-400">You're in this match-up!</div>
-          <div className="text-gray-300 mt-2">Waiting for others to vote...</div>
+      <div className="min-h-screen flex items-center justify-center p-5 md:p-9 lg:p-12" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <div className="rounded-[28px] p-6 md:p-8 border text-center" style={{ 
+          background: 'rgba(25, 15, 60, 0.75)', 
+          backdropFilter: 'blur(16px)',
+          borderColor: 'rgba(139, 92, 246, 0.35)',
+          boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)',
+          fontFamily: 'Inter, system-ui, sans-serif'
+        }}>
+          <div className="text-xl font-semibold mb-2" style={{ color: '#22d3ee' }}>You're in this match-up!</div>
+          <div className="mt-2" style={{ color: '#c7d2fe' }}>Waiting for others to vote...</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-      <div className="w-full max-w-2xl space-y-6">
+    <div className="min-h-screen flex flex-col items-center justify-center p-5 md:p-9 lg:p-12" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <div className="w-full max-w-2xl space-y-7">
         {/* Timer */}
-        <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-yellow-500 text-center">
-          <div className="text-sm text-gray-300 mb-2">Time Remaining</div>
-          <div className={`text-6xl font-bold ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : 'text-yellow-400'}`}>
+        <div className="text-center rounded-[28px] p-6 md:p-8 border" style={{ 
+          background: 'rgba(25, 15, 60, 0.75)', 
+          backdropFilter: 'blur(16px)',
+          borderColor: 'rgba(139, 92, 246, 0.35)',
+          boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)'
+        }}>
+          <div className="text-sm mb-2" style={{ color: '#c7d2fe', fontFamily: 'Inter, system-ui, sans-serif' }}>Time Remaining</div>
+          <div className={`text-6xl font-black ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : ''}`} style={{ 
+            color: timeRemaining <= 10 ? undefined : '#22d3ee',
+            fontFamily: 'Inter, system-ui, sans-serif'
+          }}>
             {timeRemaining}
           </div>
         </div>
 
         {/* Prompt */}
         {currentMatchUp && (
-          <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-6 border-2 border-purple-500 text-center">
-            <h2 className="text-2xl font-bold">{currentMatchUp.prompt}</h2>
+          <div className="text-center rounded-[28px] p-6 md:p-8 border" style={{ 
+            background: 'rgba(25, 15, 60, 0.75)', 
+            backdropFilter: 'blur(16px)',
+            borderColor: 'rgba(139, 92, 246, 0.35)',
+            boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)'
+          }}>
+            <h2 className="text-3xl font-black" style={{ color: '#f9fafb', fontFamily: 'Inter, system-ui, sans-serif' }}>{currentMatchUp.prompt}</h2>
           </div>
         )}
 
         {/* Voting Buttons */}
         {currentMatchUp && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <button
               onClick={() => handleVote('A')}
               disabled={voted || isTimerExpired}
-              className={`p-8 rounded-2xl border-2 transition-all transform ${
+              className={`p-7 rounded-[24px] border transition-all duration-150 ${
                 voted || isTimerExpired
-                  ? 'bg-gray-700/50 border-gray-600 cursor-not-allowed'
-                  : 'bg-blue-600/30 border-blue-500 hover:border-yellow-400 hover:scale-105'
+                  ? 'cursor-not-allowed'
+                  : 'hover:-translate-y-1'
               }`}
+              style={{
+                background: voted || isTimerExpired
+                  ? 'rgba(255, 255, 255, 0.02)'
+                  : 'rgba(255, 255, 255, 0.04)',
+                backdropFilter: 'blur(16px)',
+                borderColor: voted || isTimerExpired
+                  ? 'rgba(139, 92, 246, 0.2)'
+                  : 'rgba(34, 211, 238, 0.5)',
+                boxShadow: voted || isTimerExpired ? 'none' : '0 0 25px rgba(34, 211, 238, 0.35)',
+                fontFamily: 'Inter, system-ui, sans-serif'
+              }}
+              onMouseEnter={(e) => {
+                if (!voted && !isTimerExpired) {
+                  e.currentTarget.style.borderColor = '#22d3ee'
+                  e.currentTarget.style.boxShadow = '0 0 40px rgba(34, 211, 238, 0.7)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!voted && !isTimerExpired) {
+                  e.currentTarget.style.borderColor = 'rgba(34, 211, 238, 0.5)'
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
+                }
+              }}
             >
-              <div className="text-xl font-bold text-blue-400 mb-4">Answer A</div>
-              <div className="text-lg text-gray-200">{currentMatchUp.answerA}</div>
+              <div className="text-xl font-black mb-4" style={{ color: '#22d3ee' }}>Answer A</div>
+              <div className="text-lg font-semibold" style={{ color: voted || isTimerExpired ? '#c7d2fe' : '#f9fafb' }}>{currentMatchUp.answerA}</div>
             </button>
 
             <button
               onClick={() => handleVote('B')}
               disabled={voted || isTimerExpired}
-              className={`p-8 rounded-2xl border-2 transition-all transform ${
+              className={`p-7 rounded-[24px] border transition-all duration-150 ${
                 voted || isTimerExpired
-                  ? 'bg-gray-700/50 border-gray-600 cursor-not-allowed'
-                  : 'bg-pink-600/30 border-pink-500 hover:border-yellow-400 hover:scale-105'
+                  ? 'cursor-not-allowed'
+                  : 'hover:-translate-y-1'
               }`}
+              style={{
+                background: voted || isTimerExpired
+                  ? 'rgba(255, 255, 255, 0.02)'
+                  : 'rgba(255, 255, 255, 0.04)',
+                backdropFilter: 'blur(16px)',
+                borderColor: voted || isTimerExpired
+                  ? 'rgba(139, 92, 246, 0.2)'
+                  : 'rgba(139, 92, 246, 0.5)',
+                boxShadow: voted || isTimerExpired ? 'none' : '0 0 25px rgba(139, 92, 246, 0.35)',
+                fontFamily: 'Inter, system-ui, sans-serif'
+              }}
+              onMouseEnter={(e) => {
+                if (!voted && !isTimerExpired) {
+                  e.currentTarget.style.borderColor = '#22d3ee'
+                  e.currentTarget.style.boxShadow = '0 0 40px rgba(34, 211, 238, 0.7)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!voted && !isTimerExpired) {
+                  e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.5)'
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(139, 92, 246, 0.35)'
+                }
+              }}
             >
-              <div className="text-xl font-bold text-pink-400 mb-4">Answer B</div>
-              <div className="text-lg text-gray-200">{currentMatchUp.answerB}</div>
+              <div className="text-xl font-black mb-4" style={{ color: '#8b5cf6' }}>Answer B</div>
+              <div className="text-lg font-semibold" style={{ color: voted || isTimerExpired ? '#c7d2fe' : '#f9fafb' }}>{currentMatchUp.answerB}</div>
             </button>
           </div>
         )}
 
         {isTimerExpired ? (
-          <div className="bg-red-500/20 border-2 border-red-500 rounded-lg p-4 text-center text-red-300">
-            Time's up! Voting has ended.
+          <div className="rounded-[18px] p-5 text-center border" style={{ 
+            background: 'rgba(255, 0, 0, 0.1)', 
+            borderColor: 'rgba(255, 0, 0, 0.5)',
+            color: '#f9fafb',
+            fontFamily: 'Inter, system-ui, sans-serif'
+          }}>
+            <div className="font-semibold">Time's up! Voting has ended.</div>
           </div>
         ) : voted ? (
-          <div className="bg-green-500/20 border-2 border-green-500 rounded-lg p-4 text-center text-green-300">
-            Vote submitted!
+          <div className="rounded-[18px] p-5 text-center border" style={{ 
+            background: 'rgba(0, 255, 0, 0.1)', 
+            borderColor: 'rgba(0, 255, 0, 0.5)',
+            color: '#f9fafb',
+            fontFamily: 'Inter, system-ui, sans-serif'
+          }}>
+            <div className="font-semibold">Vote submitted!</div>
           </div>
         ) : null}
       </div>
