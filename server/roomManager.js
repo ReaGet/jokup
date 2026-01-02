@@ -25,6 +25,7 @@ class RoomManager {
     const room = {
       roomCode,
       players: [],
+      visitors: [],
       vip: null,
       gameState: 'LOBBY',
       createdAt: Date.now(),
@@ -32,6 +33,7 @@ class RoomManager {
       settings: {
         language: settings.language || 'en',
         volume: settings.volume !== undefined ? settings.volume : 50,
+        enableVisitors: settings.enableVisitors !== undefined ? settings.enableVisitors : false,
       },
     };
 
@@ -161,6 +163,56 @@ class RoomManager {
     return { success: true, player, room, isVIP: player.id === room.vip };
   }
 
+  joinRoomAsVisitor(roomCode, socketId) {
+    const room = this.getRoom(roomCode);
+    if (!room) {
+      return { error: 'Room not found' };
+    }
+
+    // Check if visitors are enabled
+    if (!room.settings.enableVisitors) {
+      return { error: 'Visitors are not enabled for this room' };
+    }
+
+    const visitor = {
+      id: uuidv4(),
+      socketId,
+      joinedAt: Date.now(),
+    };
+
+    room.visitors.push(visitor);
+
+    return { success: true, visitor, room };
+  }
+
+  leaveVisitor(roomCode, visitorId) {
+    const room = this.getRoom(roomCode);
+    if (!room) return null;
+
+    room.visitors = room.visitors.filter(v => v.id !== visitorId);
+
+    return room;
+  }
+
+  disconnectVisitor(roomCode, visitorId) {
+    const room = this.getRoom(roomCode);
+    if (!room) return null;
+
+    // Find visitor and update socketId to null (don't remove from room)
+    const visitor = room.visitors.find(v => v.id === visitorId);
+    if (visitor) {
+      visitor.socketId = null;
+    }
+
+    return room;
+  }
+
+  getVisitor(roomCode, visitorId) {
+    const room = this.getRoom(roomCode);
+    if (!room) return null;
+    return room.visitors.find(v => v.id === visitorId);
+  }
+
   updateGameState(roomCode, newState, gameData = null) {
     const room = this.getRoom(roomCode);
     if (!room) return false;
@@ -183,7 +235,17 @@ class RoomManager {
     if (settings.volume !== undefined) {
       room.settings.volume = settings.volume;
     }
+    if (settings.enableVisitors !== undefined) {
+      room.settings.enableVisitors = settings.enableVisitors;
+    }
 
+    return true;
+  }
+
+  deleteRoom(roomCode) {
+    const room = this.getRoom(roomCode);
+    if (!room) return false;
+    this.rooms.delete(roomCode);
     return true;
   }
 
@@ -191,7 +253,7 @@ class RoomManager {
     // Remove rooms older than maxAge (default 1 hour)
     const now = Date.now();
     for (const [code, room] of this.rooms.entries()) {
-      if (now - room.createdAt > maxAge && room.players.length === 0) {
+      if (now - room.createdAt > maxAge && room.players.length === 0 && room.visitors.length === 0) {
         this.rooms.delete(code);
       }
     }

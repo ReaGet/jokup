@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { PlayerAvatar } from '../../utils/avatarUtils'
 
 export default function ResultReveal({ results, isLastLash }) {
   const [showVotes, setShowVotes] = useState(false)
@@ -37,7 +38,7 @@ export default function ResultReveal({ results, isLastLash }) {
     const [showThirdPlace, setShowThirdPlace] = useState(false)
     const [showAllScores, setShowAllScores] = useState(false)
     
-    const entries = results?.entries || []
+    const entries = Array.isArray(results?.entries) ? results.entries : []
     
     useEffect(() => {
       // Show all answers first
@@ -89,7 +90,12 @@ export default function ResultReveal({ results, isLastLash }) {
                       : 'border-[rgba(139,92,246,0.35)] shadow-[0_0_25px_rgba(139,92,246,0.35)]'
                   }`}
                 >
-                  <div className="text-[18px] text-[#c7d2fe] mb-2 font-semibold">{entry.playerName}</div>
+                  <div className="flex items-center gap-3 mb-2">
+                    {entry.playerId && (
+                      <PlayerAvatar playerId={entry.playerId} size="w-10 h-10" />
+                    )}
+                    <div className="text-[18px] text-[#c7d2fe] font-semibold">{entry.playerName}</div>
+                  </div>
                   <div className="text-[20px] text-[#f9fafb] min-h-[80px]">{entry.answer}</div>
                   
                   {/* Show places progressively */}
@@ -152,7 +158,12 @@ export default function ResultReveal({ results, isLastLash }) {
             {showAuthors && (
               <div className="text-center mt-4">
                 <div className="text-[18px] text-[#c7d2fe]">Written by</div>
-                <div className="text-[22px] font-black text-[#22d3ee]">{results.authorA}</div>
+                <div className="flex items-center justify-center gap-3 mt-2">
+                  {results.players?.[0] && (
+                    <PlayerAvatar playerId={results.players[0]} size="w-10 h-10" />
+                  )}
+                  <div className="text-[22px] font-black text-[#22d3ee]">{results.authorA}</div>
+                </div>
                 {results.scores && results.scores[results.players?.[0]] && (
                   <div className="text-[20px] text-[#22d3ee] mt-2 font-black">
                     +{results.scores[results.players[0]]} points
@@ -185,7 +196,12 @@ export default function ResultReveal({ results, isLastLash }) {
             {showAuthors && (
               <div className="text-center mt-4">
                 <div className="text-[18px] text-[#c7d2fe]">Written by</div>
-                <div className="text-[22px] font-black text-[#8b5cf6]">{results.authorB}</div>
+                <div className="flex items-center justify-center gap-3 mt-2">
+                  {results.players?.[1] && (
+                    <PlayerAvatar playerId={results.players[1]} size="w-10 h-10" />
+                  )}
+                  <div className="text-[22px] font-black text-[#8b5cf6]">{results.authorB}</div>
+                </div>
                 {results.scores && results.scores[results.players?.[1]] && (
                   <div className="text-[20px] text-[#22d3ee] mt-2 font-black">
                     +{results.scores[results.players[1]]} points

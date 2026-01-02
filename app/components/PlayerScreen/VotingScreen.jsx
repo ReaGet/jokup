@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import SettingsButton from './SettingsButton'
 
-export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswers, onVote, playerId, timer, timerExpired }) {
+export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswers, onVote, playerId, timer, timerExpired, isVisitor = false, isVIP, onOpenSettings }) {
   const [voted, setVoted] = useState(false)
   const [rankings, setRankings] = useState({}) // { answerIndex: place (1, 2, or 3) }
   const [timeRemaining, setTimeRemaining] = useState(timer || 30)
@@ -55,15 +56,17 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
 
   // Check if player is author (can't vote on own match-up)
   const isAuthor = currentMatchUp && currentMatchUp.players && currentMatchUp.players.includes(playerId)
+  // Visitors can't vote
+  const canVote = !isVisitor && !isAuthor
 
   const handleVote = (vote) => {
-    if (voted || isAuthor || timeRemaining <= 0 || timerExpired) return
+    if (voted || !canVote || timeRemaining <= 0 || timerExpired) return
     onVote(vote)
     setVoted(true)
   }
 
   const handleLastLashVote = (answerIndex) => {
-    if (voted || timeRemaining <= 0 || timerExpired) return
+    if (voted || !canVote || timeRemaining <= 0 || timerExpired) return
     
     // If already ranked, don't allow re-selection
     if (rankings[answerIndex]) return
@@ -93,13 +96,16 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
   const isTimerExpired = timeRemaining <= 0 || timerExpired
 
   if (isLastLash) {
-    // Filter out own answer
-    const filteredAnswers = lastLashAnswers.filter((answer, index) => answer.playerId !== playerId)
+    // Filter out own answer (only for players, visitors see all)
+    const filteredAnswers = isVisitor 
+      ? lastLashAnswers 
+      : lastLashAnswers.filter((answer, index) => answer.playerId !== playerId)
     const selectedCount = Object.keys(rankings).length
     const placeLabels = { 1: '🥇 1st', 2: '🥈 2nd', 3: '🥉 3rd' }
     
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-5 md:p-9 lg:p-12" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
         <div className="w-full max-w-2xl space-y-7">
           {/* Timer */}
           <div className="text-center rounded-[28px] p-6 md:p-8 border" style={{ 
@@ -125,9 +131,16 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
           }}>
             <h2 className="text-3xl font-black mb-4" style={{ color: '#f9fafb', fontFamily: 'Inter, system-ui, sans-serif' }}>The Last Lash</h2>
             <p className="text-lg mb-2" style={{ color: '#f9fafb', fontFamily: 'Inter, system-ui, sans-serif' }}>{currentMatchUp?.prompt || 'Vote for your favorites!'}</p>
-            <p className="text-sm mt-2" style={{ color: '#c7d2fe', fontFamily: 'Inter, system-ui, sans-serif' }}>
-              Click on your top {requiredSelections} answer{requiredSelections > 1 ? 's' : ''}: 1st click = 1st place{requiredSelections > 1 ? `, 2nd click = 2nd place${requiredSelections > 2 ? ', 3rd click = 3rd place' : ''}` : ''}
-            </p>
+            {!isVisitor && (
+              <p className="text-sm mt-2" style={{ color: '#c7d2fe', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                Click on your top {requiredSelections} answer{requiredSelections > 1 ? 's' : ''}: 1st click = 1st place{requiredSelections > 1 ? `, 2nd click = 2nd place${requiredSelections > 2 ? ', 3rd click = 3rd place' : ''}` : ''}
+              </p>
+            )}
+            {isVisitor && (
+              <p className="text-sm mt-2" style={{ color: '#c7d2fe', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                Watching as visitor - players are voting
+              </p>
+            )}
             {selectedCount > 0 && (
               <p className="text-xs mt-2" style={{ color: '#22d3ee', fontFamily: 'Inter, system-ui, sans-serif' }}>
                 Selected: {selectedCount} of {requiredSelections}
@@ -152,10 +165,10 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
               return (
                 <div key={answerIndex} className="relative">
                   <button
-                    onClick={() => !voted && !isTimerExpired && handleLastLashVote(answerIndex)}
-                    disabled={voted || isTimerExpired || isSelected}
+                    onClick={() => canVote && !voted && !isTimerExpired && handleLastLashVote(answerIndex)}
+                    disabled={!canVote || voted || isTimerExpired || isSelected}
                     className={`w-full p-5 rounded-[18px] border text-left transition-all duration-150 ${
-                      isTimerExpired || voted
+                      isTimerExpired || voted || !canVote
                         ? 'cursor-not-allowed'
                         : isSelected
                         ? ''
@@ -186,13 +199,13 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
                       fontFamily: 'Inter, system-ui, sans-serif'
                     }}
                     onMouseEnter={(e) => {
-                      if (!voted && !isTimerExpired && !isSelected) {
+                      if (canVote && !voted && !isTimerExpired && !isSelected) {
                         e.currentTarget.style.borderColor = '#22d3ee'
                         e.currentTarget.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
                       }
                     }}
                     onMouseLeave={(e) => {
-                      if (!voted && !isTimerExpired && !isSelected) {
+                      if (canVote && !voted && !isTimerExpired && !isSelected) {
                         e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.35)'
                         e.currentTarget.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
                       }
@@ -253,7 +266,7 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
                 </div>
               )}
             </div>
-          ) : selectedCount < requiredSelections && (
+          ) : !isVisitor && selectedCount < requiredSelections && (
             <div className="w-full rounded-[18px] p-5 text-center border" style={{ 
               background: 'rgba(34, 211, 238, 0.1)', 
               borderColor: 'rgba(34, 211, 238, 0.35)',
@@ -261,6 +274,16 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
               fontFamily: 'Inter, system-ui, sans-serif'
             }}>
               Select {requiredSelections - selectedCount} more answer{requiredSelections - selectedCount > 1 ? 's' : ''} to complete your vote
+            </div>
+          )}
+          {isVisitor && (
+            <div className="w-full rounded-[18px] p-5 text-center border" style={{ 
+              background: 'rgba(34, 211, 238, 0.1)', 
+              borderColor: 'rgba(34, 211, 238, 0.35)',
+              color: '#22d3ee',
+              fontFamily: 'Inter, system-ui, sans-serif'
+            }}>
+              Watching as visitor - players are voting
             </div>
           )}
         </div>
@@ -286,7 +309,7 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
     )
   }
 
-  if (isAuthor) {
+  if (isAuthor && !isVisitor) {
     return (
       <div className="min-h-screen flex items-center justify-center p-5 md:p-9 lg:p-12" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
         <div className="rounded-[28px] p-6 md:p-8 border text-center" style={{ 
@@ -305,6 +328,7 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-5 md:p-9 lg:p-12" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
       <div className="w-full max-w-2xl space-y-7">
         {/* Timer */}
         <div className="text-center rounded-[28px] p-6 md:p-8 border" style={{ 
@@ -339,9 +363,9 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <button
               onClick={() => handleVote('A')}
-              disabled={voted || isTimerExpired}
+              disabled={!canVote || voted || isTimerExpired}
               className={`p-7 rounded-[24px] border transition-all duration-150 ${
-                voted || isTimerExpired
+                !canVote || voted || isTimerExpired
                   ? 'cursor-not-allowed'
                   : 'hover:-translate-y-1'
               }`}
@@ -357,13 +381,13 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
                 fontFamily: 'Inter, system-ui, sans-serif'
               }}
               onMouseEnter={(e) => {
-                if (!voted && !isTimerExpired) {
+                if (canVote && !voted && !isTimerExpired) {
                   e.currentTarget.style.borderColor = '#22d3ee'
                   e.currentTarget.style.boxShadow = '0 0 40px rgba(34, 211, 238, 0.7)'
                 }
               }}
               onMouseLeave={(e) => {
-                if (!voted && !isTimerExpired) {
+                if (canVote && !voted && !isTimerExpired) {
                   e.currentTarget.style.borderColor = 'rgba(34, 211, 238, 0.5)'
                   e.currentTarget.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.35)'
                 }
@@ -375,9 +399,9 @@ export default function VotingScreen({ currentMatchUp, isLastLash, lastLashAnswe
 
             <button
               onClick={() => handleVote('B')}
-              disabled={voted || isTimerExpired}
+              disabled={!canVote || voted || isTimerExpired}
               className={`p-7 rounded-[24px] border transition-all duration-150 ${
-                voted || isTimerExpired
+                !canVote || voted || isTimerExpired
                   ? 'cursor-not-allowed'
                   : 'hover:-translate-y-1'
               }`}

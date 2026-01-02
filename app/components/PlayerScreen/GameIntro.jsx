@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from '../../utils/useTranslation'
+import SettingsButton from './SettingsButton'
 
-export default function GameIntro() {
+export default function GameIntro({ isVIP, onOpenSettings }) {
   const { t } = useTranslation()
   const [showText, setShowText] = useState(false)
 
@@ -13,6 +14,7 @@ export default function GameIntro() {
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
       <div className={`text-center space-y-8 transition-opacity duration-1000 ${showText ? 'opacity-100' : 'opacity-0'}`}>
         <h1 className="text-6xl md:text-7xl font-black mb-8 bg-clip-text text-transparent animate-pulse" style={{
           background: 'linear-gradient(135deg, #8b5cf6, #22d3ee)',

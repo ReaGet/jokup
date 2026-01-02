@@ -1,12 +1,15 @@
 'use client'
 
-export default function Scoreboard({ scores, playerId, round }) {
+import SettingsButton from './SettingsButton'
+
+export default function Scoreboard({ scores, playerId, round, isVIP, onOpenSettings }) {
   const playerScore = scores.find(s => s.id === playerId)
   const playerRank = scores.findIndex(s => s.id === playerId) + 1
   const title = round === 'FINAL' ? 'Final Results' : `Round ${round} Complete`
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
       <div className="w-full max-w-md space-y-[28px]">
         <div className="bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-[48px] border border-[rgba(139,92,246,0.35)] text-center shadow-[0_0_40px_rgba(139,92,246,0.35)]">
           <h2 className="text-[22px] font-black mb-4 text-[#f9fafb]">{title}</h2>

@@ -9,6 +9,7 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
   const { t, language } = useTranslation()
   const [volume, setVolume] = useState(50)
   const [selectedLanguage, setSelectedLanguage] = useState('en')
+  const [enableVisitors, setEnableVisitors] = useState(false)
   const onSettingsChangeRef = useRef(onSettingsChange)
   
   // Keep ref updated with latest callback
@@ -21,12 +22,15 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
     try {
       const savedSettings = localStorage.getItem(STORAGE_KEY)
       if (savedSettings) {
-        const { volume: savedVolume, language: savedLanguage } = JSON.parse(savedSettings)
+        const { volume: savedVolume, language: savedLanguage, enableVisitors: savedEnableVisitors } = JSON.parse(savedSettings)
         if (savedVolume !== undefined) {
           setVolume(savedVolume)
         }
         if (savedLanguage) {
           setSelectedLanguage(savedLanguage)
+        }
+        if (savedEnableVisitors !== undefined) {
+          setEnableVisitors(savedEnableVisitors)
         }
       }
     } catch (err) {
@@ -39,6 +43,7 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
     const settings = {
       volume,
       language: selectedLanguage,
+      enableVisitors,
     }
 
     // Save to localStorage
@@ -71,6 +76,7 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
     const settings = {
       volume,
       language: selectedLanguage,
+      enableVisitors,
     }
 
     // Save to localStorage immediately
@@ -92,7 +98,7 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
     if (onSettingsChangeRef.current) {
       onSettingsChangeRef.current(settings)
     }
-  }, [volume, selectedLanguage, isOpen, socket, roomCode])
+  }, [volume, selectedLanguage, enableVisitors, isOpen, socket, roomCode])
 
   if (!isOpen) return null
 
@@ -132,6 +138,21 @@ export default function SettingsModal({ isOpen, onClose, onSettingsChange, socke
               <option value="en">{t('ui.english')}</option>
               <option value="ru">{t('ui.russian')}</option>
             </select>
+          </div>
+
+          {/* Enable Visitors Setting */}
+          <div>
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={enableVisitors}
+                onChange={(e) => setEnableVisitors(e.target.checked)}
+                className="w-5 h-5 rounded bg-[rgba(255,255,255,0.04)] border border-[rgba(139,92,246,0.35)] text-[#8b5cf6] focus:ring-2 focus:ring-[#22d3ee] focus:ring-offset-0 cursor-pointer accent-[#8b5cf6]"
+              />
+              <span className="text-[#c7d2fe] font-semibold text-lg">
+                {t('ui.visitorsEnabled')}
+              </span>
+            </label>
           </div>
         </div>
 

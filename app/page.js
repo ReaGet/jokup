@@ -12,6 +12,7 @@ import VotingPhase from './components/MainScreen/VotingPhase'
 import ResultReveal from './components/MainScreen/ResultReveal'
 import Scoreboard from './components/MainScreen/Scoreboard'
 import FinalWinner from './components/MainScreen/FinalWinner'
+import GameEnded from './components/MainScreen/GameEnded'
 
 const STORAGE_KEY = 'jokup_host_settings'
 
@@ -23,6 +24,7 @@ const GAME_STATES = {
   REVEAL: 'REVEAL',
   SCOREBOARD: 'SCOREBOARD',
   FINAL_WINNER: 'FINAL_WINNER',
+  GAME_ENDED: 'GAME_ENDED',
 }
 
 export default function MainScreen() {
@@ -192,6 +194,18 @@ export default function MainScreen() {
       setGameState('FINAL_WINNER')
     })
 
+    socket.on('game-ended-by-vip', () => {
+      // Set game state to GAME_ENDED
+      setGameState('GAME_ENDED')
+      
+      // Clear saved state
+      try {
+        localStorage.removeItem('jokup_host_settings')
+      } catch (err) {
+        console.error('Error clearing state:', err)
+      }
+    })
+
     socket.on('error', ({ message }) => {
       console.error('Socket error:', message)
     })
@@ -212,6 +226,7 @@ export default function MainScreen() {
       socket.off('lastlash-results-revealed')
       socket.off('scoreboard-updated')
       socket.off('game-ended')
+      socket.off('game-ended-by-vip')
       socket.off('error')
     }
   }, [socket])
@@ -221,6 +236,27 @@ export default function MainScreen() {
       // Create room with current settings
       socket.emit('create-room', { settings })
     }
+  }
+
+  const handleStartNewGame = () => {
+    // Reset all state and show start screen
+    setShowStartScreen(true)
+    setGameState('LOBBY')
+    setRoomCode('')
+    setPlayers([])
+    setTimeRemaining(90)
+    setVotingTimer(30)
+    setPlayersCompleted(0)
+    setCurrentMatchUp(null)
+    setVoteCounts(null)
+    setResults(null)
+    setScores([])
+    setRound(1)
+    setFinalScores(null)
+    setWinner(null)
+    setIsLastLash(false)
+    setLastLashAnswers([])
+    setPlayerAnswerCounts({})
   }
 
   const handleSettingsChange = useCallback((newSettings) => {
@@ -318,6 +354,9 @@ export default function MainScreen() {
     
     case GAME_STATES.FINAL_WINNER:
       return <FinalWinner finalScores={finalScores} winner={winner} />
+    
+    case GAME_STATES.GAME_ENDED:
+      return <GameEnded onStartNewGame={handleStartNewGame} />
     
           default:
             return <Lobby roomCode={roomCode} players={players} waitingForVIP={true} />

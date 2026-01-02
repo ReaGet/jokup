@@ -45,9 +45,148 @@ io.on('connection', (socket) => {
   });
 
   // Join room
-  socket.on('join-room', ({ roomCode, playerName }) => {
-    if (!roomCode || !playerName) {
-      socket.emit('error', { message: 'Room code and player name required' });
+  socket.on('join-room', ({ roomCode, playerName, isVisitor = false }) => {
+    if (!roomCode) {
+      socket.emit('error', { message: 'Room code required' });
+      return;
+    }
+
+    // Handle visitor join
+    if (isVisitor) {
+      const result = roomManager.joinRoomAsVisitor(roomCode, socket.id);
+      
+      if (result.error) {
+        socket.emit('error', { message: result.error });
+        return;
+      }
+
+      const room = roomManager.getRoom(roomCode);
+      socket.join(roomCode);
+      socket.roomCode = roomCode;
+      socket.visitorId = result.visitor.id;
+      socket.isVisitor = true;
+
+      console.log(`[Visitor] Joined room ${roomCode}, current gameState: ${room.gameState}`);
+
+      // Prepare game state for visitor based on current phase
+      const gameState = {
+        visitorId: result.visitor.id,
+        roomCode,
+        isVisitor: true,
+        gameState: room.gameState,
+        round: room.gameData?.round || 1,
+        scores: room.players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+        players: room.players.map(p => ({ id: p.id, name: p.name, score: p.score, isVIP: p.id === room.vip })),
+        settings: room.settings,
+      };
+
+      // Add game-specific state based on current phase
+      if (room.gameData) {
+        const gameData = room.gameData;
+
+        // Visitors now see all game phases, including ANSWERING
+        
+        // If in ANSWERING phase, send timer and player data
+        if (room.gameState === GAME_STATES.ANSWERING) {
+          const defaultTimer = gameData.round === ROUNDS.ROUND_3 ? TIMERS.ROUND_3 : TIMERS.ROUND_1_2;
+          gameState.timer = defaultTimer;
+          // Count completed answers per player (for progress tracking)
+          gameState.playersCompleted = 0;
+          gameState.playerAnswerCounts = {};
+          room.players.forEach(player => {
+            if (player.answers) {
+              const answerCount = Object.keys(player.answers).length;
+              gameState.playerAnswerCounts[player.id] = answerCount;
+              if (answerCount > 0) {
+                gameState.playersCompleted++;
+              }
+            }
+          });
+        }
+
+        // If in VOTING phase, send current match-up or last lash data
+        if (room.gameState === GAME_STATES.VOTING) {
+          if (gameData.round === ROUNDS.ROUND_3) {
+            // Last Lash voting
+            gameState.isLastLash = true;
+            gameState.prompt = gameData.promptData?.prompt;
+            gameState.lastLashAnswers = gameData.lastLashAnswers?.map((a, i) => ({
+              answer: a.answer,
+              index: i,
+              playerId: a.playerId,
+            })) || [];
+            let timerRemaining = TIMERS.VOTING_TIMER;
+            if (gameData.votingStartTime && gameData.votingDuration) {
+              const elapsed = Math.floor((Date.now() - gameData.votingStartTime) / 1000);
+              timerRemaining = Math.max(0, Math.floor(gameData.votingDuration / 1000) - elapsed);
+            }
+            gameState.votingTimer = timerRemaining;
+            gameState.votersCount = gameData.lastLashVoters?.size || 0;
+            gameState.totalPlayers = room.players.length;
+            // Calculate vote counts for display
+            const voteCounts = gameData.lastLashAnswers.map(() => ({ votes: 0 }));
+            if (gameData.lastLashVotes) {
+              Object.values(gameData.lastLashVotes).forEach(voteData => {
+                voteData.rankings.forEach(ranking => {
+                  const points = ranking.place === 1 ? 3 : ranking.place === 2 ? 2 : 1;
+                  if (voteCounts[ranking.answerIndex]) {
+                    voteCounts[ranking.answerIndex].votes += points;
+                  }
+                });
+              });
+            }
+            gameState.voteCounts = voteCounts;
+          } else {
+            // Regular match-up voting
+            gameState.currentMatchUp = gameData.currentMatchUp;
+            let timerRemaining = TIMERS.VOTING_TIMER;
+            if (gameData.votingStartTime && gameData.votingDuration) {
+              const elapsed = Math.floor((Date.now() - gameData.votingStartTime) / 1000);
+              timerRemaining = Math.max(0, Math.floor(gameData.votingDuration / 1000) - elapsed);
+            }
+            gameState.votingTimer = timerRemaining;
+            // Calculate vote counts for display
+            gameState.voteCounts = {
+              A: gameData.currentMatchUp?.votes ? gameData.currentMatchUp.votes.filter(v => v === 'A').length : 0,
+              B: gameData.currentMatchUp?.votes ? gameData.currentMatchUp.votes.filter(v => v === 'B').length : 0,
+            };
+          }
+        }
+
+        // If in REVEAL phase, send results
+        if (room.gameState === GAME_STATES.REVEAL) {
+          if (gameData.round === ROUNDS.ROUND_3) {
+            gameState.isLastLash = true;
+            gameState.results = {
+              prompt: gameData.promptData?.prompt,
+              entries: gameData.lastLashAnswers || [],
+            };
+          } else {
+            gameState.results = {
+              matchUpId: gameData.currentMatchUp?.promptId,
+              prompt: gameData.currentMatchUp?.prompt,
+              answerA: gameData.currentMatchUp?.answerA,
+              answerB: gameData.currentMatchUp?.answerB,
+              authorA: room.players.find(p => p.id === gameData.currentMatchUp?.players[0])?.name,
+              authorB: room.players.find(p => p.id === gameData.currentMatchUp?.players[1])?.name,
+              players: gameData.currentMatchUp?.players,
+              voteCounts: gameData.currentMatchUp?.votes ? {
+                A: gameData.currentMatchUp.votes.filter(v => v === 'A').length,
+                B: gameData.currentMatchUp.votes.filter(v => v === 'B').length,
+              } : { A: 0, B: 0 },
+            };
+          }
+        }
+      }
+
+      // Send state to visitor
+      socket.emit('visitor-joined', gameState);
+      return;
+    }
+
+    // Handle player join (existing logic)
+    if (!playerName) {
+      socket.emit('error', { message: 'Player name required' });
       return;
     }
 
@@ -381,8 +520,40 @@ io.on('connection', (socket) => {
     }, 3000); // 3 second intro
   });
 
+  // End game by VIP (VIP only)
+  socket.on('end-game-by-vip', ({ roomCode }) => {
+    const room = roomManager.getRoom(roomCode);
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    const player = roomManager.getPlayer(roomCode, socket.playerId);
+    if (!player || room.vip !== player.id) {
+      socket.emit('error', { message: 'Only VIP can end the game' });
+      return;
+    }
+
+    // Stop any running timers
+    gameEngine.stopTimer(roomCode);
+
+    // Set game state to GAME_ENDED instead of deleting room
+    roomManager.updateGameState(roomCode, GAME_STATES.GAME_ENDED);
+
+    // Notify all players and visitors in the room
+    io.to(roomCode).emit('game-ended-by-vip', {
+      roomCode,
+    });
+  });
+
   // Submit answer
   socket.on('submit-answer', ({ roomCode, promptId, answer }) => {
+    // Visitors cannot submit answers
+    if (socket.isVisitor) {
+      socket.emit('error', { message: 'Visitors cannot submit answers' });
+      return;
+    }
+
     const room = roomManager.getRoom(roomCode);
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
@@ -428,6 +599,12 @@ io.on('connection', (socket) => {
 
   // Submit vote
   socket.on('submit-vote', ({ roomCode, matchUpId, vote }) => {
+    // Visitors cannot vote
+    if (socket.isVisitor) {
+      socket.emit('error', { message: 'Visitors cannot vote' });
+      return;
+    }
+
     const room = roomManager.getRoom(roomCode);
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
@@ -547,26 +724,32 @@ io.on('connection', (socket) => {
 
   // Disconnect handling
   socket.on('disconnect', () => {
-    if (socket.roomCode && socket.playerId) {
+    if (socket.roomCode) {
       const room = roomManager.getRoom(socket.roomCode);
       
-      // If game has started, don't remove player, just disconnect them
-      // This allows them to rejoin later
-      if (room && room.gameState !== GAME_STATES.LOBBY) {
-        roomManager.disconnectPlayer(socket.roomCode, socket.playerId);
-        // Don't emit player-left event - player is still in the game, just disconnected
-      } else {
-        // If in lobby, remove player completely
-        const updatedRoom = roomManager.leaveRoom(socket.roomCode, socket.playerId);
-        if (updatedRoom) {
-          io.to(socket.roomCode).emit('player-left', {
-            players: updatedRoom.players.map(p => ({
-              id: p.id,
-              name: p.name,
-              score: p.score,
-              isVIP: p.id === updatedRoom.vip,
-            })),
-          });
+      if (socket.isVisitor && socket.visitorId) {
+        // Handle visitor disconnect - just remove them silently
+        roomManager.leaveVisitor(socket.roomCode, socket.visitorId);
+      } else if (socket.playerId) {
+        // Handle player disconnect
+        // If game has started, don't remove player, just disconnect them
+        // This allows them to rejoin later
+        if (room && room.gameState !== GAME_STATES.LOBBY) {
+          roomManager.disconnectPlayer(socket.roomCode, socket.playerId);
+          // Don't emit player-left event - player is still in the game, just disconnected
+        } else {
+          // If in lobby, remove player completely
+          const updatedRoom = roomManager.leaveRoom(socket.roomCode, socket.playerId);
+          if (updatedRoom) {
+            io.to(socket.roomCode).emit('player-left', {
+              players: updatedRoom.players.map(p => ({
+                id: p.id,
+                name: p.name,
+                score: p.score,
+                isVIP: p.id === updatedRoom.vip,
+              })),
+            });
+          }
         }
       }
     }
@@ -661,6 +844,12 @@ function startRound(roomCode, round) {
     state: GAME_STATES.ANSWERING,
     data: { round, timer: timerDuration },
   });
+  
+  // Emit answering-started event for visitors (and any listeners)
+  io.to(roomCode).emit('answering-started', {
+    timer: timerDuration,
+    round,
+  });
 }
 
 // Start voting phase for Round 1 & 2
@@ -733,6 +922,12 @@ function showNextMatchUp(roomCode) {
     revealMatchUpResults(roomCode);
   });
 
+  console.log(`[Voting] Starting voting for room ${roomCode}, match-up ${gameData.currentMatchUpIndex + 1}/${gameData.matchUps.length}`)
+  
+  // Log all sockets in room for debugging
+  const socketsInRoom = io.sockets.adapter.rooms.get(roomCode);
+  console.log(`[Voting] Sockets in room ${roomCode}:`, socketsInRoom ? Array.from(socketsInRoom) : [])
+  
   io.to(roomCode).emit('voting-started', {
     matchUps: gameData.matchUps,
     currentMatchUpIndex: gameData.currentMatchUpIndex,
@@ -876,6 +1071,7 @@ function startLastLashVoting(roomCode) {
     revealLastLashResults(roomCode);
   });
 
+  console.log(`[LastLash] Starting Last Lash voting for room ${roomCode}`)
   io.to(roomCode).emit('lastlash-voting-started', {
     prompt: gameData.promptData.prompt,
     answers: allAnswers.map((a, i) => ({ 
@@ -963,6 +1159,18 @@ function handleLastLashVote(roomCode, voterId, vote) {
 
   gameData.lastLashVoters.add(voterId);
 
+  // Calculate current vote counts for each answer (for live display)
+  const voteCounts = gameData.lastLashAnswers.map(() => ({ votes: 0 }));
+  Object.values(gameData.lastLashVotes).forEach(voteData => {
+    voteData.rankings.forEach(ranking => {
+      // Award points: 3 for 1st place, 2 for 2nd, 1 for 3rd
+      const points = ranking.place === 1 ? 3 : ranking.place === 2 ? 2 : 1;
+      if (voteCounts[ranking.answerIndex]) {
+        voteCounts[ranking.answerIndex].votes += points;
+      }
+    });
+  });
+
   // Broadcast voting status update
   const votersCount = gameData.lastLashVoters.size;
   const totalPlayers = room.players.length;
@@ -971,6 +1179,11 @@ function handleLastLashVote(roomCode, voterId, vote) {
     votersCount,
     totalPlayers,
     hasVoted: Array.from(gameData.lastLashVoters),
+  });
+  
+  // Broadcast vote counts update for live display
+  io.to(roomCode).emit('lastlash-votes-updated', {
+    voteCounts,
   });
 
   // Check if all players have voted

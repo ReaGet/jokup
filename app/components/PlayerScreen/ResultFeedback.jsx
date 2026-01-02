@@ -1,10 +1,13 @@
 'use client'
 
-export default function ResultFeedback({ results, playerId, isLastLash }) {
+import SettingsButton from './SettingsButton'
+
+export default function ResultFeedback({ results, playerId, isLastLash, isVIP, onOpenSettings }) {
   if (isLastLash) {
     const playerResult = Array.isArray(results) ? results.find(r => r.playerId === playerId) : null
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
         <div className="w-full max-w-md bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-[48px] border border-[rgba(139,92,246,0.35)] text-center space-y-[28px] shadow-[0_0_40px_rgba(139,92,246,0.35)]">
           <h2 className="text-[30px] font-black text-[#f9fafb]">Last Lash Results</h2>
           {playerResult ? (
@@ -33,6 +36,7 @@ export default function ResultFeedback({ results, playerId, isLastLash }) {
     // Player wasn't in this match-up
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+        <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
         <div className="bg-[rgba(255,255,255,0.04)] backdrop-blur-[16px] rounded-[18px] p-[22px] border border-[rgba(139,92,246,0.35)] text-center shadow-[0_0_25px_rgba(139,92,246,0.35)]">
           <div className="text-[20px] text-[#c7d2fe]">You voted for the winner!</div>
         </div>
@@ -42,6 +46,7 @@ export default function ResultFeedback({ results, playerId, isLastLash }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
       <div className="w-full max-w-md bg-[rgba(25,15,60,0.75)] backdrop-blur-[16px] rounded-[28px] p-[48px] border border-[rgba(139,92,246,0.35)] text-center space-y-[28px] shadow-[0_0_40px_rgba(139,92,246,0.35)]">
         <h2 className="text-[30px] font-black text-[#f9fafb]">Your Result</h2>
         <div>

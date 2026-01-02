@@ -78,6 +78,7 @@ export default function Lobby({ roomCode, players, waitingForVIP }) {
   const containerRef = useRef(null)
   const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 })
   const [joinUrl, setJoinUrl] = useState('')
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined' && roomCode) {
@@ -108,6 +109,34 @@ export default function Lobby({ roomCode, players, waitingForVIP }) {
     return Math.max(baseRadius, 200) // Minimum radius
   }, [dimensions])
 
+  // Copy room code to clipboard
+  const handleCopyCode = async () => {
+    if (!roomCode) return
+    
+    try {
+      await navigator.clipboard.writeText(roomCode)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy code:', err)
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = roomCode
+      textArea.style.position = 'fixed'
+      textArea.style.opacity = '0'
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand('copy')
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      } catch (fallbackErr) {
+        console.error('Fallback copy failed:', fallbackErr)
+      }
+      document.body.removeChild(textArea)
+    }
+  }
+
   return (
     <div 
       ref={containerRef}
@@ -129,19 +158,68 @@ export default function Lobby({ roomCode, players, waitingForVIP }) {
         >
           {t('ui.joinAudience')}
         </div>
-        {/* Room Code - according to design system */}
-        <div 
-          className="text-2xl font-bold px-4 py-2 mb-2 rounded-[18px]"
-          style={{
-            background: 'rgba(25, 15, 60, 0.75)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(139, 92, 246, 0.35)',
-            color: '#f9fafb',
-            fontFamily: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-            boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)'
-          }}
-        >
-          {roomCode}
+        {/* Room Code with Copy Button - according to design system */}
+        <div className="flex items-center gap-2 mb-2">
+          <div 
+            className="text-2xl font-bold px-4 py-2 rounded-[18px] flex-1"
+            style={{
+              background: 'rgba(25, 15, 60, 0.75)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(139, 92, 246, 0.35)',
+              color: '#f9fafb',
+              fontFamily: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+              boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)'
+            }}
+          >
+            {roomCode}
+          </div>
+          <button
+            onClick={handleCopyCode}
+            className="px-3 py-2 rounded-[18px] border-none cursor-pointer transition-all duration-150 flex items-center justify-center"
+            style={{
+              background: copied 
+                ? 'linear-gradient(135deg, #22d3ee, #8b5cf6)' 
+                : 'rgba(25, 15, 60, 0.75)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(139, 92, 246, 0.35)',
+              color: '#f9fafb',
+              fontFamily: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+              boxShadow: '0 0 40px rgba(139, 92, 246, 0.35)',
+              minWidth: '44px',
+              minHeight: '44px'
+            }}
+            onMouseEnter={(e) => {
+              if (!copied) {
+                e.currentTarget.style.borderColor = '#22d3ee'
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(34, 211, 238, 0.5)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!copied) {
+                e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.35)'
+                e.currentTarget.style.boxShadow = '0 0 40px rgba(139, 92, 246, 0.35)'
+              }
+            }}
+            title={copied ? t('ui.copied') : t('ui.copyCode')}
+          >
+            {copied ? (
+              <span style={{ fontSize: '18px' }}>✓</span>
+            ) : (
+              <svg 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            )}
+          </button>
         </div>
         {/* QR Code - according to design system */}
         {joinUrl && (

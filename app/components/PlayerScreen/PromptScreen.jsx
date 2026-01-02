@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import SettingsButton from './SettingsButton'
 
-export default function PromptScreen({ prompts, timer, onAnswerSubmit, timerExpired }) {
+export default function PromptScreen({ prompts, timer, onAnswerSubmit, timerExpired, isVIP, onOpenSettings }) {
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0)
   const [answer, setAnswer] = useState('')
   const [timeRemaining, setTimeRemaining] = useState(timer)
@@ -92,6 +93,7 @@ export default function PromptScreen({ prompts, timer, onAnswerSubmit, timerExpi
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ background: 'radial-gradient(circle at top, #1b0f3b, #0b0618 70%)' }}>
+      <SettingsButton onClick={onOpenSettings} isVIP={isVIP} />
       <div className="w-full max-w-2xl space-y-[28px]">
         {/* Timer */}
         <div className="bg-[rgba(255,255,255,0.04)] backdrop-blur-[16px] rounded-[18px] p-[22px] border border-[rgba(139,92,246,0.35)] text-center shadow-[0_0_25px_rgba(34,211,238,0.35)] transition-all hover:translate-y-[-2px] hover:border-[#22d3ee] hover:shadow-[0_0_25px_rgba(34,211,238,0.35)]">
